@@ -1,2 +1,6 @@
 /flask
 /virtualenv-15.1.0
+app/static
+.idea/workspace.xml
+
+tmp/
