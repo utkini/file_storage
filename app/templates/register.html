@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content_body %}
+
+<div class="container">
+    <br>
+        <h5>In order to register please fill in all the fields.</h5>
+        <div style="margin-right: 600px">
+        <form action="/register/" method="post" >
+            <div class="form-group">
+                <label for="InputUsername">Username</label>
+                <input type="text" class="form-control" id="InputUsername" placeholder="Enter username"
+                       name="username" value="{{ request.form.username }}">
+            </div>
+            <div class="form-group">
+                <label for="InputEmail">Email address</label>
+                <input type="email" class="form-control" id="InputEmail" placeholder="Enter email"
+                       name="email" value="{{ request.form.email }}">
+                <small id="emailHelp" class="form-text text-muted">
+                    We'll never share your email with anyone else.
+                </small>
+            </div>
+            <div class="form-group">
+                <label for="InputPassword">Password</label>
+                <input type="password" class="form-control" id="InputPassword" placeholder="Password"
+                       name="password" value="{{ request.form.password }}">
+            </div>
+            <div class="form-group">
+                <label for="PasswordConfirm">Repeat Password</label>
+                <input type="password" class="form-control" id="PasswordConfirm" placeholder="Repeat Password"
+                       name="confirm" value="{{ request.form.password }}">
+            </div>
+            <button type="submit" class="btn btn-primary bg-success">Sign Up</button>
+        </form>
+        </div>
+
+        <p>{{ error }}</p>
+</div>
+
+
+{% endblock %}
