@@ -1,7 +1,6 @@
 from flask import render_template, flash, request, url_for, redirect,session
 from app import app
-from registration import RegistrationForm
-from dbconnection import connection
+from regForm import RegistrationForm
 from passlib.hash import sha256_crypt
 
 form = RegistrationForm(request.form)
