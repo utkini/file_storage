@@ -4,21 +4,30 @@
 
 <div class="container">
     <br>
-    <h5>Please enter email and password</h5>
-    <div style="margin-right: 600px">
-    <form action="" method="post" >
-        <div class="form-group">
-            <label for="InputUsername">Email address</label>
-            <input type="text" class="form-control" id="InputUsername" placeholder="Enter username" name="username"
-                   value="{{ request.form.username }}">
-        </div>
-        <div class="form-group">
-            <label for="InputPassword">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword" placeholder="Password"
-                   name="password" value="{{ request.form.password }}">
-        </div>
-        <button type="submit" class="btn btn-primary bg-success">Submit</button>
-    </form>
+
+    <div style="margin-right: 700px">
+        <h5><p style="text-align: center">Sign in</p></h5>
+        <form action="" method="post" >
+            <div class="form-group">
+                <input type="text" class="form-control" id="InputUsername" placeholder="Enter username" name="username"
+                       value="{{ request.form.username }}">
+                {% if error_u %}
+                <small id="userhelp" class="form-text text-muted">
+                    {{ error_u }}
+                </small>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" id="exampleInputPassword" placeholder="Password"
+                       name="password" value="{{ request.form.password }}">
+                {% if error_p %}
+                <small id="pwdhelp" class="form-text text-muted">
+                    {{ error_p }}
+                </small>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary bg-success" style="width: 380px;">Login</button>
+        </form>
     </div>
 
     <p>{{ error }}</p>

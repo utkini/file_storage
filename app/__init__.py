@@ -49,8 +49,7 @@ def login_page():
             if check_user == 'bad':
                 error = 'Such a user does not exist'
                 return render_template('login.html',
-                                       error=error,
-                                       title="Log in")
+                                       error_u=error)
             if sha256_crypt.verify(request.form['password'], user.get_pwd(request.form['username'])):
                 session['logged_in'] = True
                 session['username'] = request.form['username']
@@ -60,11 +59,10 @@ def login_page():
                 error = 'Incorrect password. Try again.'
         gc.collect()
         return render_template('login.html',
-                               title="Log in",
-                               error=error)
+                               error_p=error)
     except Exception as e:
         return render_template('login.html',
-                               error=error,
+                               error=e,
                                title='Log in')
 
 
@@ -72,12 +70,12 @@ def login_page():
 def register_page():
     try:
         form = RegistrationForm(request.form)
-        add_usr = Register()
-        if request.method == "POST":
-            username = request.form['username']
-            email = request.form['email']
-            password = sha256_crypt.encrypt(str(request.form['password']))
-            check = add_usr.new_user(username, email, password, '/')
+        new_user = Register()
+        if request.method == "POST" and form.validate():
+            username = form.username.data
+            email = form.email.data
+            password = sha256_crypt.encrypt(str(form.password.data))
+            check = new_user.add_user(username, email, password, '/')
             if check != 'ok':
                 flash(check)
                 return render_template('register.html',

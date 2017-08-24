@@ -8,10 +8,10 @@
         <title>File storage</title>
       {% endif %}
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+      <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+      <link href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet" type="text/html">
       <link href="{{ url_for('static', filename='css/docs.min.css') }}" rel="stylesheet">
-      <link rel="icon" href="{{ url_for('static', filename='file_S.ico') }}">
+      <link href="{{ url_for('static', filename='file_S.ico') }}" rel="icon">
 
   </head>
 
@@ -22,18 +22,15 @@
                  src="{{ url_for('static', filename='images/mainlogo1.png') }}">
         </a>
         <ul class="nav justify-content-end">
-            <li class="nav-item">
-                <a class="nav-link text-light" href="/support">
-                    <p>Support</p></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-light" href="/login/">
-                    <p>Log in</p></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-light" href="/register/">
-                    <p>Sign up</p></a>
-            </li>
+
+            {% if session.logged_in %}
+            <a class="nav-link text-light" href="/support"><p>Support</p></a>
+            <a class="nav-link text-light" href="/logout/"><p>Log out</p></a>
+            {% else %}
+            <a class="nav-link text-light" href="/support"><p>Support</p></a>
+            <a class="nav-link text-light" href="/login/"><p>Log in</p></a>
+            <a class="nav-link text-light" href="/register/"><p>Sign up</p></a>
+            {% endif %}
         </ul>
     </div>
 

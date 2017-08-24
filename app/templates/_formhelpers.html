@@ -1,0 +1,22 @@
+{% macro render_field(field) %}
+    {% if field.name == 'username' %}
+        {{ field(class_="form-control",placeholder= "Username", type="text", **kwargs) | safe }}
+    {% endif %}
+    {% if field.name == 'email' %}
+        {{ field(class_="form-control",placeholder= "Email", type=field.name, **kwargs) | safe }}
+    {% endif %}
+    {% if field.name == 'password' %}
+        {{ field(class_="form-control",placeholder= "Password", type=field.name, **kwargs) | safe }}
+    {% endif %}
+    {% if field.name == 'confirm' %}
+        {{ field(class_="form-control",placeholder= "Repeat Password", type="password", **kwargs) | safe }}
+    {% endif %}
+        {% if field.errors %}
+             <small id="error" class="form-text">
+            {% for error in field.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+             </small>
+        {% endif %}
+
+{% endmacro %}

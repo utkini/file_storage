@@ -15,7 +15,7 @@ class Register:
             self.coll = db.coll_reg
             self.user_id = 0
 
-    def new_user(self, username, email, password, tracking):
+    def add_user(self, username, email, password, tracking):
         coll = self.coll
         user_check = coll.find_one({'username': username})
         if user_check is not None:
