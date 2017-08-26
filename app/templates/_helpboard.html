@@ -1,0 +1,4 @@
+{% macro render(field) %}
+    <a class="breadcrumb-item" href="#">{{ field(*args) | safe }}</a>
+
+{% endmacro %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content_body %}
+
+
+    <nav class="breadcrumb">
+        {% for x in d %}
+        <a class="breadcrumb-item text-success" href="/">{{ x }}</a>
+        {% endfor %}
+    </nav>
+        {% if dirs or files %}
+        <ul>
+            {% for dir in dirs %}
+            <li>{{ dir }}</li>
+            {% endfor %}
+            {% for file in files %}
+            <li>{{ file }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+{% endblock %}

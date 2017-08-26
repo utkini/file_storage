@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content_body %}
+
+<div class="container">
+    <br>
+<div style="margin-right: 300px; margin-left: 300px">
+    <div>
+        <h6 style="text-align: center">If you want to change the user email, enter the password for confirmation</h6>
+        <form action="/settings/" method="post" >
+            <div class="form-group">
+                <input type="text" class="form-control" id="InputPassword" placeholder="Password" name="password"
+                       value="{{ request.form.password }}">
+                {% if error_p %}
+                <small id="pwdhelp" class="form-text text-muted">
+                    {{ error_p }}
+                </small>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" id="InputUsername" placeholder="New Username" name="username"
+                       value="{{ request.form.username }}">
+                {% if error_u %}
+                <small id="userhelp" class="form-text text-muted">
+                    {{ error_u }}
+                </small>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary bg-success" style="width: 480px;">
+                Change Username
+            </button>
+        </form>
+    </div>
+<br>
+    <div>
+        <h6 style="text-align: center">Change password</h6>
+        <form action="/settings/" method="post" >
+            <div class="form-group">
+                <input type="text" class="form-control" id="InputPassword" placeholder="Enter password"
+                       name="password" value="{{ request.form.password }}">
+                {% if error_p %}
+                <small id="pwdhelp" class="form-text text-muted">
+                    {{ error_p }}
+                </small>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary bg-success" style="width: 480px;">
+                Change Password
+            </button>
+        </form>
+    </div>
+<br>
+    <div>
+        <h6 style="text-align: center">If you want to finish</h6>
+        <a class="btn btn-primary bg-success text-white"
+               style="width: 480px;" href="/logout/">
+            Log out
+        </a>
+
+    </div>
+<br>
+    <div>
+        <h6 style="text-align: center">If you delete your accont</h6>
+        <a class="btn btn-primary bg-success text-white"
+               style="width: 480px;" href="/delete/">
+            Delete User
+        </a>
+
+    </div>
+
+
+</div>
+</div>
+{% endblock %}
