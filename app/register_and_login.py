@@ -4,10 +4,9 @@ import pymongo
 from passlib.hash import sha256_crypt
 
 
-# Нужно продумать, что бы в базе изначально была строчка админа, чтобы можно было уже с ней сравниквать
-# полученные значения и гоовриьт есть там такое или нет
-
-
+# Данный класс представляет регистрацию пользователя, в нем реализованы методы добавления
+# пользователей удаления пользователей, проверка всех пользователей, получение id пользователя отслеживание где
+# пользователь остановился, также для админа есть команыы удалить всех пользователей и получить всех пользователей
 class Register:
     def __init__(self):
         with MongoClient('localhost', 27017) as mongo:
@@ -39,7 +38,7 @@ class Register:
 
     def get_id_user(self, username):
         try:
-            get_id = self.coll.find_one({'username' : username})
+            get_id = self.coll.find_one({'username': username})
             return get_id['user_id']
         except Exception as e:
             return str(e)
@@ -51,10 +50,9 @@ class Register:
         except Exception as e:
             return str(e)
 
-
     def del_user(self, username):
         try:
-            self.coll.remove({'username' : username})
+            self.coll.remove({'username': username})
             ans = username + 'has been deleted'
             return ans
         except Exception as e:
@@ -71,24 +69,25 @@ class Register:
         return 'del all'
 
 
-class Log_in:
+# Данный класс реализует проверку пользователя при авторизации. сравнивает его логин и пароль.
+# Все пароли закодированы с помощью sha-256 и хранятся в БД. через html пользователь может сварерить свой
+# ввод пароля с тем паролем, котрый хранится в БД
+class LogIn:
     def __init__(self):
         with MongoClient('localhost', 27017) as mongo:
             db = mongo.db_storage
             self.coll = db.coll_reg
 
-    def login_user(self,username):
+    def login_user(self, username):
         tmp = self.coll.find_one({'username': username})
         if tmp is None:
             return 'bad'
         else:
             return 'ok'
 
-    def get_pwd(self,username):
+    def get_pwd(self, username):
         tmp = self.coll.find_one({'username': username})
         if tmp is None:
-            return  'bad'
+            return 'bad'
         else:
             return tmp['password']
-
-
