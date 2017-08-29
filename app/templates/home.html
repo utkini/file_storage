@@ -5,13 +5,13 @@
     <div style="margin-top: 70px">
     <nav class="breadcrumb">
         {% for path in pathway %}
-        <a class="breadcrumb-item text-success" href="/home/{{ username }}/{{ pathway[path] }}">{{ path }}</a>
+        <a class="breadcrumb-item text-success" href="/home/{{ pathway[path] }}">{{ path }}</a>
         {% endfor %}
     </nav>
-        {% if dirs or files %}
+        {% if folders or files %}
         <ul>
-            {% for dir in dirs %}
-            <li>{{ dir }}</li>
+            {% for folder in folders %}
+                <li><a href="/home/{{ folders[folder] }}">{{ folder }}</a></li>
             {% endfor %}
             {% for file in files %}
             <li>{{ file }}</li>

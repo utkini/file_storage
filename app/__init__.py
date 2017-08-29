@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, flash, url_for, ses
 from regForm import RegistrationForm
 from passlib.hash import sha256_crypt
 from register_and_login import Register, LogIn
-# from usersdata import UsersData
+from usersdata import UsersData
 from functools import wraps
 import gc
 import os
@@ -119,29 +119,36 @@ def logout_page():
 def home_user(pathway):
     try:
         username = pathway.partition('/')[0]
-        # users_file = UsersData()
-        if request.method == 'POST':
-            # check if the post request has the file part
-            if 'file' in request.files:
-                file = request.files['file']
-                if file.filename == '':
-                    flash('No selected file')
-                    return redirect(request.url)
-                if file and allowed_file(file.filename):
-                    filename = secure_filename(file.filename)
-                    flash(filename)
-                    # path_file = users_file.add_file(session['username'],session['user_id'],filename)
-                    # file.save(os.path.join(path_file, filename))
-                    return redirect(url_for('home_user',
-                                            username=username))
-            elif 'old_dir' and 'new_dir' in request.form:
-                flash(request.values)
-                return render_template('home.html',
-                               username=username)
-
+        user_file = UsersData()
+        folders = user_file.get_folder(session['username'],session['user_id'],pathway)
+        files = user_file.find_files_in_dirs(session['username'],session['user_id'],pathway)
+        dirs = user_file.get_dir(pathway)
         return render_template('home.html',
-                               username=username)
-
+                               pathway=dirs,
+                               folders=folders,
+                               files=files)
+        # users_file = UsersData()
+        # if request.method == 'POST':
+        #     # check if the post request has the file part
+        #     if 'file' in request.files:
+        #         file = request.files['file']
+        #         if file.filename == '':
+        #             flash('No selected file')
+        #             return redirect(request.url)
+        #         if file and allowed_file(file.filename):
+        #             filename = secure_filename(file.filename)
+        #             flash(filename)
+        #             # path_file = users_file.add_file(session['username'],session['user_id'],filename)
+        #             # file.save(os.path.join(path_file, filename))
+        #             return redirect(url_for('home_user',
+        #                                     username=username))
+        #     elif 'old_dir' and 'new_dir' in request.form:
+        #         flash(request.values)
+        #         return render_template('home.html',
+        #                                 username=username)
+        #
+        # return render_template('home.html',
+        #                        username=username)
     except Exception as e:
         print str(e)
 

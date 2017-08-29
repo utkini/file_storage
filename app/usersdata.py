@@ -133,7 +133,7 @@ class UsersData:
     # Получение всех директорий, котрые есть у от той, в которой он находится, чтобы все вывести.
     # нужно вводить полную директорию нахождения пользователя и тогда метод будет выдевать следующие
     # возможные директории для прохождения
-    def get_ways(self, username, user_id, user_dir):
+    def get_folder(self, username, user_id, user_dir):
         tmp = self.coll_d.find_one({'user_data.username': username,
                                     'user_data.user_id': user_id,
                                     'file': {}
@@ -141,6 +141,7 @@ class UsersData:
         paths = tmp['pathways']
         new_paths = set()
         sep_dir = user_dir.split('/')
+        d = {}
         for path in paths:
             if user_dir in path:
                 path = path.split('/')
@@ -150,8 +151,18 @@ class UsersData:
                         new_paths.add(path[count+1])
                 except ValueError as e:
                     pass
-        return list(new_paths)
+        for it in new_paths:
+            d[it]= user_dir + '/' + it
+        return d
 
+    def get_dir(self, pathway):
+        d = {}
+        sep_path = pathway.split('/')
+        for p in sep_path:
+            if p:
+                ind = pathway.find(p)
+                d[p] = pathway[:ind + len(p)]
+        return d
 
     # Смена имени директории. Для смены имени нужны все директории в который есть эта директория и их замена этого
     # имени на новое име созданное пользователем.
@@ -225,29 +236,29 @@ class UsersData:
         return 'del all'
 
 
-b = UsersData()
-# b.del_all()
-# b.create_dir_for_user('admin', 1)
-# print b.add_file('admin', 1, 'users.txt', '/new/ma/mt')
-# b.add_file('admin', 1, 'main.txt')
-b.get_all()
-# # b.del_file('adam', 234, 'users.txt', '/new')
-#
-# b.add_file('admin', 1, 'users.pdf', '/new/b')
-# # b.add_file('adam', 234, 'users.mp3', '/new/song')
-# # b.add_file('adam', 234, 'users.jpg', '/new/pic')
-# # b.create_dir_for_user('eva', 122)
-# # b.add_file('eva', 122, 'text.pdf', '/my/gen')
-# # b.get_all()
-# # b.add_way('adam', 234, '/new')
+# b = UsersData()
+# # b.del_all()
+# # b.create_dir_for_user('admin', 1)
+# # print b.add_file('admin', 1, 'users.txt', '/new/ma/mt')
+# # b.add_file('admin', 1, 'main.txt')
+# b.get_all()
+# # # b.del_file('adam', 234, 'users.txt', '/new')
 # #
-# # b.add_way('adam', 234, '/new/song')
-# # b.add_way('adam', 234, '/new/pic')
-# #
-# # print b.get_ways('adam', 234)
-# # # b.delete_dir('adam', 234, '/new/ma/mo')
-print b.change_dir_name('admin', 1, 'new', 'nw')
-print b.get_ways('admin',1,'/admin/nw/ma')
-b.get_all()
+# # b.add_file('admin', 1, 'users.pdf', '/new/b')
+# # # b.add_file('adam', 234, 'users.mp3', '/new/song')
+# # # b.add_file('adam', 234, 'users.jpg', '/new/pic')
+# # # b.create_dir_for_user('eva', 122)
+# # # b.add_file('eva', 122, 'text.pdf', '/my/gen')
+# # # b.get_all()
+# # # b.add_way('adam', 234, '/new')
+# # #
+# # # b.add_way('adam', 234, '/new/song')
+# # # b.add_way('adam', 234, '/new/pic')
+# # #
+# # # print b.get_ways('adam', 234)
+# # # # b.delete_dir('adam', 234, '/new/ma/mo')
+# print b.change_dir_name('admin', 1, 'new', 'nw')
+# print b.get_folder('admin',1,'/admin/nw')
+# b.get_all()
 
 
