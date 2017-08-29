@@ -6,8 +6,7 @@ import pymongo
 
 
 class UsersData:
-    directory = os.getcwd()
-    directory = directory + '/users'
+    directory = '/home/ihgorek/Documents/file_storage/app/users'
     TEXT = {'txt', 'doc', 'docx', 'docm', 'dotm', 'dotx', 'pdf',
             'xls', 'xlsx', 'xlsm', 'xltx', 'xlt', 'xltm', 'pptx',
             'ppt', 'ppsx', 'pps', 'potx', 'pot', 'ppa', 'ppam'}
@@ -131,16 +130,28 @@ class UsersData:
             files.append(i['file']['filename'])
         return files
 
-    # Получение всех директорий, котрые есть у пользователя(зачем сделал - не знаю)
-    def get_ways(self, username, user_id):
+    # Получение всех директорий, котрые есть у от той, в которой он находится, чтобы все вывести.
+    # нужно вводить полную директорию нахождения пользователя и тогда метод будет выдевать следующие
+    # возможные директории для прохождения
+    def get_ways(self, username, user_id, user_dir):
         tmp = self.coll_d.find_one({'user_data.username': username,
                                     'user_data.user_id': user_id,
-                                    'file':{}
+                                    'file': {}
                                     })
-        if tmp['pathways']:
-            return tmp['pathways']
+        paths = tmp['pathways']
+        new_paths = set()
+        sep_dir = user_dir.split('/')
+        for path in paths:
+            if user_dir in path:
+                path = path.split('/')
+                try:
+                    count = path.index(sep_dir[-1])
+                    if len(path)-count != 1:
+                        new_paths.add(path[count+1])
+                except ValueError as e:
+                    pass
+        return list(new_paths)
 
-        return 'This user has no path'
 
     # Смена имени директории. Для смены имени нужны все директории в который есть эта директория и их замена этого
     # имени на новое име созданное пользователем.
@@ -151,6 +162,11 @@ class UsersData:
         sample = self.coll_d.find({'user_data.username': username,
                                    'user_data.user_id': user_id,
                                    'file.user_dir': {'$regex': reg}})
+        count = self.coll_d.find({'user_data.username': username,
+                                   'user_data.user_id': user_id,
+                                   'file.user_dir': {'$regex': reg}}).count()
+        if count == 0:
+            return 'Directory with this name does not exist'
         for sm in sample:
             tmp = sm['file']['user_dir']
             tmp = tmp.replace(old_way[-1], new_dir_name)
@@ -210,27 +226,28 @@ class UsersData:
 
 
 b = UsersData()
-b.del_all()
-b.create_dir_for_user('adam', 234)
-print b.add_file('adam', 234, 'users.txt', '/new/ma/mt')
-b.add_file('adam', 234, 'main.txt')
+# b.del_all()
+# b.create_dir_for_user('admin', 1)
+# print b.add_file('admin', 1, 'users.txt', '/new/ma/mt')
+# b.add_file('admin', 1, 'main.txt')
 b.get_all()
-# b.del_file('adam', 234, 'users.txt', '/new')
-
-b.add_file('adam', 234, 'users.pdf', '/new/b')
-# b.add_file('adam', 234, 'users.mp3', '/new/song')
-# b.add_file('adam', 234, 'users.jpg', '/new/pic')
-# b.create_dir_for_user('eva', 122)
-# b.add_file('eva', 122, 'text.pdf', '/my/gen')
-# b.get_all()
-# b.add_way('adam', 234, '/new')
+# # b.del_file('adam', 234, 'users.txt', '/new')
 #
-# b.add_way('adam', 234, '/new/song')
-# b.add_way('adam', 234, '/new/pic')
-#
-# print b.get_ways('adam', 234)
-# # b.delete_dir('adam', 234, '/new/ma/mo')
-b.change_dir_name('adam', 234, '/new', 'nw')
+# b.add_file('admin', 1, 'users.pdf', '/new/b')
+# # b.add_file('adam', 234, 'users.mp3', '/new/song')
+# # b.add_file('adam', 234, 'users.jpg', '/new/pic')
+# # b.create_dir_for_user('eva', 122)
+# # b.add_file('eva', 122, 'text.pdf', '/my/gen')
+# # b.get_all()
+# # b.add_way('adam', 234, '/new')
+# #
+# # b.add_way('adam', 234, '/new/song')
+# # b.add_way('adam', 234, '/new/pic')
+# #
+# # print b.get_ways('adam', 234)
+# # # b.delete_dir('adam', 234, '/new/ma/mo')
+print b.change_dir_name('admin', 1, 'new', 'nw')
+print b.get_ways('admin',1,'/admin/nw/ma')
 b.get_all()
 
 

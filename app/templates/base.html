@@ -17,10 +17,17 @@
 
   <header>
     <div class="navbar bg-success" >
+        {% if session.logged_in %}
+            <a class="navbar-brand" href="/home/{{ session.username }}">
+            <img style="max-width: 180px; margin-top: -20px"
+                 src="{{ url_for('static', filename='images/mainlogo1.png') }}">
+            </a>
+        {% else %}
         <a class="navbar-brand" href="/">
             <img style="max-width: 180px; margin-top: -20px"
                  src="{{ url_for('static', filename='images/mainlogo1.png') }}">
         </a>
+        {% endif %}
         <ul class="nav justify-content-end">
 
             {% if session.logged_in %}

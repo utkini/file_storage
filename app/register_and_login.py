@@ -91,3 +91,7 @@ class LogIn:
             return 'bad'
         else:
             return tmp['password']
+
+    def get_user_id(self,username):
+        tmp = self.coll.find_one({'username': username})
+        return tmp['user_id']

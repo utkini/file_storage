@@ -1,28 +1,30 @@
 # coding=utf-8
-from flask import Flask, render_template, request, redirect, flash, url_for, session, g,send_from_directory
+from flask import Flask, render_template, request, redirect, flash, url_for, session, g, send_from_directory
 from regForm import RegistrationForm
 from passlib.hash import sha256_crypt
 from register_and_login import Register, LogIn
+# from usersdata import UsersData
 from functools import wraps
 import gc
 import os
+from werkzeug.utils import secure_filename
 
-UPLOAD_FOLDER = '/home/ihgorek/Documents/file_storage/app/5e'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+UPLOAD_FOLDER = '/home/ihgorek/Documents/file_storage/app/users'
+ALLOWED_EXTENSIONS = {'txt', 'doc', 'docx', 'docm', 'dotm', 'dotx', 'pdf',      # TEXT
+                      'xls', 'xlsx', 'xlsm', 'xltx', 'xlt', 'xltm', 'pptx',
+                      'ppt', 'ppsx', 'pps', 'potx', 'pot', 'ppa', 'ppam',
+                      'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'bmp',     # PICTURE
+                      'wav', 'mp3', 'wma', 'ogg', 'aac', 'flac'}            # SONG
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 # ему тут не место, он должен быть в файлу flaskapp.wsgi чтобы его никто не своровал
 app.secret_key = 'your secret key. If you share your website, do NOT share it with this key'
 
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-def secure_filename(filename):
-    return filename.replace('/','_')
-
-
 
 
 # Декоратор для входа в систему, loguot чтобы можно было сделать
@@ -59,8 +61,9 @@ def login_page():
             if sha256_crypt.verify(request.form['password'], user.get_pwd(request.form['username'])):
                 session['logged_in'] = True
                 session['username'] = request.form['username']
+                session['user_id'] = user.get_user_id(session['username'])
                 flash('You are logged in!!')
-                return render_template('main.html')
+                return redirect(url_for('home_user',pathway=session['username']))
             else:
                 error = 'Incorrect password. Try again.'
         gc.collect()
@@ -92,7 +95,9 @@ def register_page():
                 gc.collect()
                 session['logged_in'] = True
                 session['username'] = username
-                return redirect(url_for('homepage'))
+                # users_file = UsersData()
+                # users_file.create_dir_for_user(session['username'], session['user_id'])
+                return redirect(url_for('home_user',pathway=session['username']))
 
         return render_template('register.html',
                                form=form,
@@ -110,26 +115,38 @@ def logout_page():
     return redirect(url_for('homepage'))
 
 
-@app.route('/home/<user>/<diri>')
-def home_user(user, diri):
-    return render_template('main.html',
-                           d=user,
-                           dirs=diri)
+@app.route('/home/<path:pathway>', methods=['GET', 'POST'])
+def home_user(pathway):
+    try:
+        username = pathway.partition('/')[0]
+        # users_file = UsersData()
+        if request.method == 'POST':
+            # check if the post request has the file part
+            if 'file' in request.files:
+                file = request.files['file']
+                if file.filename == '':
+                    flash('No selected file')
+                    return redirect(request.url)
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    flash(filename)
+                    # path_file = users_file.add_file(session['username'],session['user_id'],filename)
+                    # file.save(os.path.join(path_file, filename))
+                    return redirect(url_for('home_user',
+                                            username=username))
+            elif 'old_dir' and 'new_dir' in request.form:
+                flash(request.values)
+                return render_template('home.html',
+                               username=username)
+
+        return render_template('home.html',
+                               username=username)
+
+    except Exception as e:
+        print str(e)
 
 
-@app.route('/home/')
-def home():
-    c = '/home/ihgorek/Documents/file_storage/app/5e'
-    ans = os.walk(c)
-    d, dirs, files = next(ans)
-    d = d.split('/')
-    return render_template('home.html',
-                           d=d,
-                           dirs=dirs,
-                           files=files)
-
-
-@app.route('/settings/',methods=['GET','POST'])
+@app.route('/settings/', methods=['GET', 'POST'])
 def settings():
     if request.args.values():
         return 'hyh'
@@ -159,12 +176,8 @@ def upload_file():
     <!doctype html>
     <title>Upload new File</title>
     <h1>Upload new File</h1>
-    <form method=post enctype=multipart/form-data>
-      <p><input type=file name=file>
-         <input type=submit value=Upload>
-    </form>
+    
     '''
-
 
 
 @app.route('/uploads/<filename>')
