@@ -118,37 +118,76 @@ def logout_page():
 @app.route('/home/<path:pathway>', methods=['GET', 'POST'])
 def home_user(pathway):
     try:
-        username = pathway.partition('/')[0]
+        username = pathway.split('/')[0]
         user_file = UsersData()
-        folders = user_file.get_folder(session['username'],session['user_id'],pathway)
-        files = user_file.find_files_in_dirs(session['username'],session['user_id'],pathway)
+        user = LogIn()
+        folders = user_file.get_folder(username, session['user_id'], pathway)
+        files = user_file.find_files_in_dirs(username, session['user_id'], pathway)
         dirs = user_file.get_dir(pathway)
-        return render_template('home.html',
-                               pathway=dirs,
-                               folders=folders,
-                               files=files)
-        # users_file = UsersData()
-        # if request.method == 'POST':
-        #     # check if the post request has the file part
-        #     if 'file' in request.files:
-        #         file = request.files['file']
-        #         if file.filename == '':
-        #             flash('No selected file')
-        #             return redirect(request.url)
-        #         if file and allowed_file(file.filename):
-        #             filename = secure_filename(file.filename)
-        #             flash(filename)
-        #             # path_file = users_file.add_file(session['username'],session['user_id'],filename)
-        #             # file.save(os.path.join(path_file, filename))
-        #             return redirect(url_for('home_user',
-        #                                     username=username))
-        #     elif 'old_dir' and 'new_dir' in request.form:
-        #         flash(request.values)
-        #         return render_template('home.html',
-        #                                 username=username)
-        #
-        # return render_template('home.html',
-        #                        username=username)
+        if request.method == 'POST':
+            flash(request.form)
+            # check if the post request has the file part
+            if 'file' in request.files:
+                file = request.files['file']
+                if file.filename == '':
+                    flash('No selected file')
+                    return redirect(request.url)
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    flash(filename)
+                    path_file = user_file.add_file(session['username'],session['user_id'],filename)
+                    file.save(os.path.join(path_file, filename))
+                    return redirect(url_for('home_user',
+                                            pathway=pathway))
+                #файл есть
+            elif 'new_dir_password' and 'new_dir' in request.form:
+                sep_path = pathway.split('/')
+                change_dir = sep_path[-1]
+                if sha256_crypt.verify(request.form['new_dir_password'], user.get_pwd(session['username'])):
+                    error = user_file.change_dir_name(session['username'],session['user_id'],
+                                                      pathway, request.form['new_dir'])
+                    tmp = pathway.split('/')
+                    tmp[-1] = request.form['new_dir']
+                    pathway = '/'.join(tmp)
+                    dirs = user_file.get_dir(pathway)
+                    folders = user_file.get_folder(session['username'], session['user_id'], pathway)
+                    files = user_file.find_files_in_dirs(session['username'], session['user_id'], pathway)
+                    return render_template('home.html',
+                                           pathway=dirs,
+                                           folders=folders,
+                                           files=files,
+                                           error_dir=error)
+                else:
+                    error = 'Incorrect password. Try again.'
+                    return render_template('home.html',
+                                           pathway=dirs,
+                                           folders=folders,
+                                           files=files,
+                                           error_dir_p=error)
+            elif 'create_new_folder' and 'create_folder_password' in request.form:
+                if sha256_crypt.verify(request.form['create_folder_password'], user.get_pwd(session['username'])):
+                    way = pathway + '/' + request.form['create_new_folder']
+                    error = user_file.create_folder(username,session['user_id'],way)
+                    dirs = user_file.get_dir(pathway)
+                    folders = user_file.get_folder(session['username'], session['user_id'], pathway)
+                    files = user_file.find_files_in_dirs(session['username'], session['user_id'], pathway)
+                    return render_template('home.html',
+                                           pathway=dirs,
+                                           folders=folders,
+                                           files=files,
+                                           error_create_folder=error)
+                else:
+                    error = 'Incorrect password. Try again.'
+                    return render_template('home.html',
+                                           pathway=dirs,
+                                           folders=folders,
+                                           files=files,
+                                           error_create_folder_p=error)
+        else:
+            return render_template('home.html',
+                                   pathway=dirs,
+                                   folders=folders,
+                                   files=files)
     except Exception as e:
         print str(e)
 

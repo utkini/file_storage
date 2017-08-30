@@ -8,45 +8,123 @@
         <a class="breadcrumb-item text-success" href="/home/{{ pathway[path] }}">{{ path }}</a>
         {% endfor %}
     </nav>
-        {% if folders or files %}
+
         <ul>
+        {% if folders %}
             {% for folder in folders %}
-                <li><a href="/home/{{ folders[folder] }}">{{ folder }}</a></li>
+                <li><a class="text-success" href="/home/{{ folders[folder] }}">{{ folder }}</a></li>
             {% endfor %}
+        {% endif %}
+        {% if files %}
+            <ul>
             {% for file in files %}
             <li>{{ file }}</li>
             {% endfor %}
-        </ul>
+            </ul>
         {% endif %}
+        </ul>
+
     </div>
-    <div style="margin-right: 400px;margin-bottom: 30px">
-    <form method="post" action="">
-        <div class="form-group">
-            <input type="text" class="form-control" id="InputUsername" placeholder="Enter old dir" name="old_dir"
-                   value="{{ request.form.old_dir }}">
-            {% if error_u %}
-                <small id="userhelp" class="form-text text-muted">
-                    {{ error_u }}
-                </small>
-            {% endif %}
-        </div>
-        <div class="form-group">
-            <input type="text" class="form-control" id="InputUsername" placeholder="Enter new dir" name="new_dir"
-                   value="{{ request.form.new_dir }}">
-        </div>
-        <button type="submit" class="btn btn-primary bg-success" style="width: 380px;">Change</button>
-    </form>
-    </div>
-    <div style="margin-right: 400px">
+
+
+    <div style="margin-left: 400px">
     <form method="post" enctype=multipart/form-data>
         <div class="form-group">
 
             <input class="form-control" type=file name=file >
         </div>
-        <div class="form-group" style="margin-right: 400px">
+        <div class="form-group" style="margin-left: 615px">
             <input class="btn btn-primary bg-success" type=submit value=Upload>
         </div>
     </form>
     </div>
+<hr>
+    <p class="btn-group" role="group">
+        <button class="btn btn-primary btn-success" type="button" data-toggle="collapse"
+                data-target="#СreateNewFolder" aria-expanded="false" aria-controls="collapseExample">
+                Create new folder
+        </button>
+
+        <button class="btn btn-primary btn-success" type="button" data-toggle="collapse"
+                data-target="#ChangeNameDirectory" aria-expanded="false" aria-controls="collapseExample">
+                Change name directory
+        </button>
+
+        <button class="btn btn-primary btn-success" type="button" data-toggle="collapse"
+                data-target="#collapseExample1" aria-expanded="false" aria-controls="collapseExample">
+                Delete directory
+        </button>
+    </p>
+
+    <div class="collapse" id="СreateNewFolder">
+        <div class="card card-body">
+            <div style="margin-right: 730px;margin-bottom: 30px">
+                <form method="post" action="">
+                    <h6>You can create new folder in this directory.</h6>
+
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="InputDirectory" placeholder="Folder name"
+                                   name="create_new_folder" value="{{ request.form.create_new_folder }}">
+                            {% if error_create_folder %}
+                                <small id="userhelp" class="form-text text-muted">
+                                    {{ error_create_folder }}
+                                </small>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <input type="password" class="form-control" id="InputFolderPassword" placeholder="Password"
+                                   name="create_folder_password" value="{{ request.form.create_folder_password }}">
+                            {% if error_create_folder_p %}
+                            <small id="userhelp" class="form-text text-muted">
+                                {{ error_create_folder_p }}
+                            </small>
+                            {% endif %}
+                        </div>
+                    <button type="submit" class="btn btn-primary bg-success" style="width: 380px;">Change</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="collapse" id="ChangeNameDirectory">
+        <div class="card card-body">
+            <div style="margin-right: 730px;margin-bottom: 30px">
+                <form method="post" action="">
+                    <h6>You can always change the name of the folder where you are located.</h6>
+
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="InputDirectory" placeholder="New dir"
+                                   name="new_dir" value="{{ request.form.new_dir }}">
+                            {% if error_dir %}
+                                <small id="userhelp" class="form-text text-muted">
+                                    {{ error_dir }}
+                                </small>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <input type="password" class="form-control" id="InputDirectoryPassword"
+                                   placeholder="Password"
+                                   name="new_dir_password" value="{{ request.form.new_dir_password }}">
+                            {% if error_dir_p %}
+                            <small id="userhelp" class="form-text text-muted">
+                                {{ error_dir_p }}
+                            </small>
+                            {% endif %}
+                        </div>
+                    <button type="submit" class="btn btn-primary bg-success" style="width: 380px;">Change</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+<hr>
+
+
+
+
 
 {% endblock %}

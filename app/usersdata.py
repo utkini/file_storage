@@ -1,6 +1,8 @@
 # coding=utf-8
 import hashlib
 import os
+from collections import OrderedDict
+
 from pymongo import MongoClient
 import pymongo
 
@@ -85,7 +87,7 @@ class UsersData:
             return 'The extension of these files are not supported by this system.'
 
     def del_file(self, username, user_id, filename, user_dir):
-        user_dir = '/' + username + user_dir
+        user_dir = '/' + user_dir
         cur = self.coll_d.find_one({'user_data.username': username,
                                 'user_data.user_id': user_id,
                                 'file.filename': filename,
@@ -122,6 +124,7 @@ class UsersData:
 
     # Поиск файла по директории, проверяя тот ли это пользователь с помощью двух идентифкаторов username и user_id
     def find_files_in_dirs(self, username, user_id, user_dir):
+        user_dir = '/' + user_dir
         files = []
         tmp = self.coll_d.find({'user_data.username': username,
                                 'user_data.user_id': user_id,
@@ -152,11 +155,11 @@ class UsersData:
                 except ValueError as e:
                     pass
         for it in new_paths:
-            d[it]= user_dir + '/' + it
+            d[it] = user_dir + '/' + it
         return d
 
     def get_dir(self, pathway):
-        d = {}
+        d = OrderedDict()
         sep_path = pathway.split('/')
         for p in sep_path:
             if p:
@@ -180,7 +183,10 @@ class UsersData:
             return 'Directory with this name does not exist'
         for sm in sample:
             tmp = sm['file']['user_dir']
-            tmp = tmp.replace(old_way[-1], new_dir_name)
+            tmp_1 = tmp.split('/')
+            index = tmp_1.index(old_way[-1])
+            tmp_1[index]=new_dir_name
+            tmp = '/'.join(tmp_1)
             c.append(tmp)
         for i in c:
             self.coll_d.update({'user_data.username': username,
@@ -195,9 +201,16 @@ class UsersData:
                                     'file':{}})
         tmp = sample['pathways']
         tm = []
-        for path in tmp:
-            t = path.replace(old_way[-1], new_dir_name)
-            tm.append(t)
+        for sm in tmp:
+            sm_1 = sm.split('/')
+            try:
+                index = sm_1.index(old_way[-1])
+                sm_1[index] = new_dir_name
+                sm = '/'.join(sm_1)
+            except Exception:
+                pass
+            tm.append(sm)
+
         if tm:
             self.coll_d.update({'user_data.username': username,
                             'user_data.user_id': user_id,
@@ -211,16 +224,13 @@ class UsersData:
     # их.(Пока только из бд.
     # !!!!!из системы удаление не происходит!!!!!
     def delete_dir(self, username, user_id, name_dir):
-        tmp = self.coll_d.find({'user_data.username': username,
+        tmp = self.coll_d.find_one({'user_data.username': username,
                                 'user_data.user_id': user_id,
                                 'file':{}})
         new_ways = []
-        ways = []
-        for st in tmp:
-            if st['pathways']:
-                ways = st['pathways']
+        ways = tmp['pathways']
         for way in ways:
-            if way != name_dir:
+            if name_dir not in way:
                 new_ways.append(way)
         self.coll_d.update_many({'user_data.username': username, 'user_data.user_id': user_id},
                                 {'$set':
@@ -235,30 +245,54 @@ class UsersData:
         self.coll_d.remove(None)
         return 'del all'
 
+    def create_folder(self, username, user_id, new_folder):
+        sample = self.coll_d.find_one({'user_data.username': username,
+                                       'user_data.user_id': user_id,
+                                       'file': {}})
+        new_folder = '/' + new_folder
+        path = sample['pathways']
+        if new_folder in path:
+            return 'This folder already exists'
+        s = set(path)
+        s.add(new_folder)
+        path = list(s)
+        self.coll_d.update({'user_data.username': username,
+                            'user_data.user_id': user_id,
+                            'file': {}},
+                           {'$set': {
+                               'pathways': path
+                           }
+                           })
 
-# b = UsersData()
-# # b.del_all()
-# # b.create_dir_for_user('admin', 1)
-# # print b.add_file('admin', 1, 'users.txt', '/new/ma/mt')
-# # b.add_file('admin', 1, 'main.txt')
-# b.get_all()
-# # # b.del_file('adam', 234, 'users.txt', '/new')
+b = UsersData()
+
+f = False
+if f:
+    b.del_all()
+    b.create_dir_for_user('admin', 1)
+    b.add_file('admin', 1, 'words.txt')
+    b.add_file('admin', 1, 'users.pdf', '/new/b')
+    b.add_file('admin', 1, 'us.txt', '/new/b/c')
+    b.add_file('admin', 1, 'users.jpg', '/new/pic')
+
+
+# b.del_file('admin', 1, 'errors.png', 'admin')
+# # b.create_dir_for_user('eva', 122)
+# # b.add_file('eva', 122, 'text.pdf', '/my/gen')
+# # b.get_all()
+# # b.add_way('adam', 234, '/new')
 # #
-# # b.add_file('admin', 1, 'users.pdf', '/new/b')
-# # # b.add_file('adam', 234, 'users.mp3', '/new/song')
-# # # b.add_file('adam', 234, 'users.jpg', '/new/pic')
-# # # b.create_dir_for_user('eva', 122)
-# # # b.add_file('eva', 122, 'text.pdf', '/my/gen')
-# # # b.get_all()
-# # # b.add_way('adam', 234, '/new')
-# # #
-# # # b.add_way('adam', 234, '/new/song')
-# # # b.add_way('adam', 234, '/new/pic')
-# # #
-# # # print b.get_ways('adam', 234)
-# # # # b.delete_dir('adam', 234, '/new/ma/mo')
-# print b.change_dir_name('admin', 1, 'new', 'nw')
-# print b.get_folder('admin',1,'/admin/nw')
-# b.get_all()
+# # b.add_way('adam', 234, '/new/song')
+# # b.add_way('adam', 234, '/new/pic')
+# #
+# # print b.get_ways('adam', 234)
+# # # b.delete_dir('adam', 234, '/new/ma/mo')
+#print b.change_dir_name('admin', 1, 'admin/new/b', 'pdf_files')
+# t = b.find_files_in_dirs('admin', 1,'admin')
+# for ti in t:
+#     print ti
+#b.create_folder('admin',1,'admin/tor')
+#b.delete_dir('admin',1,'admin/new/files')
+b.get_all()
 
 
