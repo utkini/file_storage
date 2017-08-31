@@ -63,7 +63,7 @@
                     <h6>You can change the file name in this directory.</h6>
 
                         <div class="form-group">
-                            <input type="text" class="form-control" id="InputOldFilename" placeholder="Filename"
+                            <input type="text" class="form-control" id="InputOldFilename" placeholder="File name"
                                    name="rename_file_old" value="{{ request.form.rename_file_old }}">
                             {% if error_rename_file %}
                                 <small id="userhelp" class="form-text text-muted">
@@ -73,7 +73,7 @@
                         </div>
 
                         <div class="form-group">
-                            <input type="text" class="form-control" id="InputNewFilename" placeholder="New filename"
+                            <input type="text" class="form-control" id="InputNewFilename" placeholder="New file name"
                                    name="rename_file_new" value="{{ request.form.rename_file_new }}">
                             {% if error_fp %}
                             <small id="userhelp" class="form-text text-muted">
@@ -86,6 +86,41 @@
             </div>
         </div>
     </div>
+
+    <div class="collapse" id="DeleteFile">
+        <div class="card card-body">
+            <div style="margin-right: 730px;margin-bottom: 30px">
+                <form method="post" action="">
+                    <h6>You can remove the love file from this directory.</h6>
+
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="InputFilename" placeholder="File name"
+                                   name="del_file" value="{{ request.form.del_file }}">
+                            {% if error_del_file %}
+                                <small id="userhelp" class="form-text text-muted">
+                                    {{ error_del_file }}
+                                </small>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <input type="password" class="form-control" id="InputDelFilePassword"
+                                   placeholder="Password"
+                                   name="del_file_password" value="{{ request.form.del_file_password }}">
+                            {% if error_del_file_p %}
+                            <small id="userhelp" class="form-text text-muted">
+                                {{ error_del_file_p }}
+                            </small>
+                            {% endif %}
+                        </div>
+                    <button type="submit" class="btn btn-primary bg-success" style="width: 380px;">Delete File</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
 
 
 <hr>
@@ -131,7 +166,7 @@
                             </small>
                             {% endif %}
                         </div>
-                    <button type="submit" class="btn btn-primary bg-success" style="width: 380px;">Create</button>
+                    <button type="submit" class="btn btn-primary bg-success" style="width: 380px;">Create Folder</button>
                 </form>
             </div>
         </div>
@@ -163,7 +198,7 @@
                             </small>
                             {% endif %}
                         </div>
-                    <button type="submit" class="btn btn-primary bg-success" style="width: 380px;">Change</button>
+                    <button type="submit" class="btn btn-primary bg-success" style="width: 380px;">Change name directory</button>
                 </form>
             </div>
         </div>
@@ -195,7 +230,7 @@
                             </small>
                             {% endif %}
                         </div>
-                    <button type="submit" class="btn btn-primary bg-success" style="width: 380px;">Delete</button>
+                    <button type="submit" class="btn btn-primary bg-success" style="width: 380px;">Delete folder</button>
                 </form>
             </div>
         </div>

@@ -64,7 +64,7 @@ def login_page():
                 session['username'] = request.form['username']
                 session['user_id'] = user.get_user_id(session['username'])
                 flash('You are logged in!!')
-                return redirect(url_for('home_user',pathway=session['username']))
+                return redirect(url_for('home_user', pathway=session['username']))
             else:
                 error = 'Incorrect password. Try again.'
         gc.collect()
@@ -96,8 +96,9 @@ def register_page():
                 gc.collect()
                 session['logged_in'] = True
                 session['username'] = username
-                # users_file = UsersData()
-                # users_file.create_dir_for_user(session['username'], session['user_id'])
+                session['user_id'] = new_user.get_id_user(username)
+                users_file = UsersData()
+                users_file.create_dir_for_user(session['username'], session['user_id'])
                 return redirect(url_for('home_user',pathway=session['username']))
 
         return render_template('register.html',
@@ -117,6 +118,7 @@ def logout_page():
 
 
 @app.route('/home/<path:pathway>', methods=['GET', 'POST'])
+@login_required
 def home_user(pathway):
     try:
         username = pathway.split('/')[0]
@@ -139,7 +141,12 @@ def home_user(pathway):
                     filename = secure_filename(file.filename)
                     flash(filename)
                     path_file = user_file.add_file(session['username'],session['user_id'],filename, pathway)
-                    file.save(os.path.join(path_file, filename))
+                    if path_file == 'This file exist':
+                        flash('This file exist!')
+                        return redirect(url_for('home_user',
+                                            pathway=pathway))
+                    else:
+                        file.save(os.path.join(path_file, filename))
                     return redirect(url_for('home_user',
                                             pathway=pathway))
                 else:
@@ -219,6 +226,26 @@ def home_user(pathway):
                                            folders=folders,
                                            files=files,
                                            error_del_dir_p=error)
+            elif 'del_file' and 'del_file_password' in request.form:
+                if sha256_crypt.verify(request.form['del_file_password'], user.get_pwd(session['username'])):
+                    error = user_file.del_file(username, session['user_id'],request.form['del_file'],pathway)
+                    dirs = user_file.get_dir(username, session['user_id'], pathway)
+                    if dirs == 'There is no such directory':
+                        return redirect(page_not_found)
+                    folders = user_file.get_folder(session['username'], session['user_id'], pathway)
+                    files = user_file.find_files_in_dirs(session['username'], session['user_id'], pathway)
+                    return render_template('home.html',
+                                           pathway=dirs,
+                                           folders=folders,
+                                           files=files,
+                                           error_del_file=error)
+                else:
+                    error = 'Incorrect password. Try again.'
+                    return render_template('home.html',
+                                           pathway=dirs,
+                                           folders=folders,
+                                           files=files,
+                                           error_del_file_p=error)
         else:
             return render_template('home.html',
                                    pathway=dirs,
@@ -228,49 +255,20 @@ def home_user(pathway):
         print str(e)
 
 @app.route('/download/<path:filepath>')
+@login_required
 def send_files(filepath):
     filepath = './users/' + filepath
     print filepath
     return send_file(filepath,conditional=True)
 
 @app.route('/settings/', methods=['GET', 'POST'])
+@login_required
 def settings():
     if request.args.values():
         return 'hyh'
     else:
         return render_template('settings.html')
 
-
-@app.route('/uploads', methods=['GET', 'POST'])
-def upload_file():
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # if user does not select file, browser also
-        # submit a empty part without filename
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('uploaded_file',
-                                    filename=filename))
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    
-    '''
-
-
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'],
-                               filename)
 
 
 # Обработчики ошибок на сайте. 404 - если страница не найдена и 405 - если метода нет

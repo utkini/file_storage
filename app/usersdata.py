@@ -71,6 +71,12 @@ class UsersData:
         tmp = filename.rpartition('.')
         format_file = tmp[-1]
         new_user_dir = '/' + user_dir
+        count = self.coll_d.find({'user_data.username': username,
+                                  'user_data.user_id': user_id,
+                                  'file.user_dir': new_user_dir,
+                                  'file.filename':filename}).count()
+        if count == 1:
+            return 'This file exist'
         if format_file in self.TEXT or format_file in self.PIC or format_file in self.SONG:
             fil = {'filename': filename,
                    'user_dir': new_user_dir,
@@ -101,13 +107,19 @@ class UsersData:
     def del_file(self, username, user_id, filename, user_dir):
         user_dir = '/' + user_dir
         cur = self.coll_d.find_one({'user_data.username': username,
-                                'user_data.user_id': user_id,
-                                'file.filename': filename,
-                                'file.user_dir': user_dir})
+                                    'user_data.user_id': user_id,
+                                    'file.filename': filename,
+                                    'file.user_dir': user_dir})
+        if cur is None:
+            return 'There is no such file in this directory'
         one_dir = cur['file']['sys_dir']
-        os.rmdir(self.directory + one_dir)
-        one_dir = one_dir.rpartition('/')
-        os.rmdir(self.directory + one_dir[0])
+        sys_dir = self.directory + one_dir
+        del_path = sys_dir + '/' + cur['file']['filename']
+        os.remove(del_path)
+        self.coll_d.delete_one({'user_data.username': username,
+                            'user_data.user_id': user_id,
+                            'file.filename': filename,
+                            'file.user_dir': user_dir})
 
     # Добавление нужных директорий в основное поле с директориями,
     # поле нужно для выводе всех директорий, если понадобится.
@@ -185,11 +197,13 @@ class UsersData:
         tmp = sample['pathways']
         if new_path in tmp:
             d = OrderedDict()
+            tmp = ''
             sep_path = pathway.split('/')
             for p in sep_path:
                 if p:
-                    ind = pathway.find(p)
-                    d[p] = pathway[:ind + len(p)]
+                    tmp += p
+                    d[p] = tmp
+                    tmp += '/'
             return d
         else:
             return 'There is no such directory'
@@ -275,7 +289,8 @@ class UsersData:
 
         for samp in sample:
             sys_path = samp['file']['sys_dir']
-            del_path = self.directory + sys_path + '/' + samp['file']['filename']
+            sys_path = self.directory + sys_path
+            del_path = sys_path + '/' + samp['file']['filename']
             os.remove(del_path)
         self.coll_d.delete_many({'user_data.username': username,
                                  'user_data.user_id': user_id,
@@ -318,12 +333,8 @@ if f:
   #  b.add_file('admin', 1, 'users.pdf', 'admin/tor')
 
 
-
-# b.add_file('admin', 1, 'us.txt', '/new/b/c')
-# b.add_file('admin', 1, 'users.jpg', '/new/pic')
-# b.del_file('admin', 1, 'errors.png', 'admin')
 # b.create_dir_for_user('eva', 122)
-# b.add_file('eva', 122, 'text.pdf', '/my/gen')
+#print b.add_file('admin', 1, 'words.txt', 'admin/dai')
 # b.get_all()
 # b.add_way('adam', 234, '/new')
 # b.add_way('adam', 234, '/new/song')
@@ -336,6 +347,8 @@ if f:
 #     print ti
 #b.get_all()
 #print b.delete_dir('admin',1,'admin/me')
+#b.del_file('admin',1,'words.txt','admin/ade')
+#print b.get_dir('admin',1,'admin/admi')
 b.get_all()
 
 
