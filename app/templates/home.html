@@ -18,7 +18,11 @@
         {% if files %}
             <ul>
             {% for file in files %}
-            <li>{{ file }}</li>
+            <li>
+                <a class="text-success" href="/download/{{ files[file] }}">
+                    {{ file }}
+                </a>
+            </li>
             {% endfor %}
             </ul>
         {% endif %}
@@ -39,6 +43,52 @@
     </form>
     </div>
 <hr>
+    <p>
+        <button class="btn btn-primary btn-success" type="button" data-toggle="collapse"
+                data-target="#RenameFile" aria-expanded="false" aria-controls="collapseExample1">
+                Rename file
+        </button>
+
+        <button class="btn btn-primary btn-success" type="button" data-toggle="collapse"
+                data-target="#DeleteFile" aria-expanded="false" aria-controls="collapseExample1">
+                Delete file
+        </button>
+
+    </p>
+
+    <div class="collapse" id="RenameFile">
+        <div class="card card-body">
+            <div style="margin-right: 730px;margin-bottom: 30px">
+                <form method="post" action="">
+                    <h6>You can change the file name in this directory.</h6>
+
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="InputOldFilename" placeholder="Filename"
+                                   name="rename_file_old" value="{{ request.form.rename_file_old }}">
+                            {% if error_rename_file %}
+                                <small id="userhelp" class="form-text text-muted">
+                                    {{ error_rename_file }}
+                                </small>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="InputNewFilename" placeholder="New filename"
+                                   name="rename_file_new" value="{{ request.form.rename_file_new }}">
+                            {% if error_fp %}
+                            <small id="userhelp" class="form-text text-muted">
+                                {{ error_fp }}
+                            </small>
+                            {% endif %}
+                        </div>
+                    <button type="submit" class="btn btn-primary bg-success" style="width: 380px;">Change</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+<hr>
     <p class="btn-group" role="group">
         <button class="btn btn-primary btn-success" type="button" data-toggle="collapse"
                 data-target="#СreateNewFolder" aria-expanded="false" aria-controls="collapseExample">
@@ -51,7 +101,7 @@
         </button>
 
         <button class="btn btn-primary btn-success" type="button" data-toggle="collapse"
-                data-target="#collapseExample1" aria-expanded="false" aria-controls="collapseExample">
+                data-target="#DeleteDirectory" aria-expanded="false" aria-controls="collapseExample">
                 Delete directory
         </button>
     </p>
@@ -81,7 +131,7 @@
                             </small>
                             {% endif %}
                         </div>
-                    <button type="submit" class="btn btn-primary bg-success" style="width: 380px;">Change</button>
+                    <button type="submit" class="btn btn-primary bg-success" style="width: 380px;">Create</button>
                 </form>
             </div>
         </div>
@@ -114,6 +164,38 @@
                             {% endif %}
                         </div>
                     <button type="submit" class="btn btn-primary bg-success" style="width: 380px;">Change</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="collapse" id="DeleteDirectory">
+        <div class="card card-body">
+            <div style="margin-right: 730px;margin-bottom: 30px">
+                <form method="post" action="">
+                    <h6>You can delete any folder in this directory.</h6>
+
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="InputDelFolder" placeholder="Name folder"
+                                   name="del_dir" value="{{ request.form.del_dir }}">
+                            {% if error_del_dir %}
+                                <small id="userhelp" class="form-text text-muted">
+                                    {{ error_del_dir }}
+                                </small>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <input type="password" class="form-control" id="InputDelDirectoryPassword"
+                                   placeholder="Password"
+                                   name="del_dir_password" value="{{ request.form.del_dir_password }}">
+                            {% if error_del_dir_p %}
+                            <small id="userhelp" class="form-text text-muted">
+                                {{ error_del_dir_p }}
+                            </small>
+                            {% endif %}
+                        </div>
+                    <button type="submit" class="btn btn-primary bg-success" style="width: 380px;">Delete</button>
                 </form>
             </div>
         </div>

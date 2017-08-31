@@ -8,6 +8,11 @@ import pymongo
 
 
 class UsersData:
+    """ Данныйкласс предназначен для основных действи пользователя:
+    добавление файла, создание директории, получение путей этих директорий,
+    изменений имен файлов и директорий, получение файлов в директории, удаление директорий,
+    удаление файлов, обновление файлов. просмотр всех значений в БД удаление всех значений из БД.
+    """
     directory = '/home/ihgorek/Documents/file_storage/app/users'
     TEXT = {'txt', 'doc', 'docx', 'docm', 'dotm', 'dotx', 'pdf',
             'xls', 'xlsx', 'xlsm', 'xltx', 'xlt', 'xltm', 'pptx',
@@ -20,6 +25,10 @@ class UsersData:
             db = mongo.db_storage
             self.coll_d = db.coll_data
 
+    '''
+    Данный метод испульзуется при создании нового пользователя.
+    он создает его корневую папку в списке pathways для дальнейшей работы.
+    '''
     def create_dir_for_user(self, username, user_id):
         user_dir = '/' + username
         user_dir_os = self.directory + user_dir
@@ -35,8 +44,11 @@ class UsersData:
         except Exception as e:
             print str(e)
 
-    # Данный метод добавляет по username и user_id файл с 3мя параметрами, имя файла,
-    # его путь в системе и его путь в вебе.
+    '''
+    Данный метод реализует добавление файла в БД и создание директорий на сервере и директорий для пользователя
+    для хранения этого файла.
+    На сервере файл сохраняется в папках созданных с помощью алгоритма md5.
+    '''
     def add_file(self, username, user_id, filename, user_dir=''):
         file_dir = user_dir + '/' + filename
         m = hashlib.md5()
@@ -58,7 +70,7 @@ class UsersData:
         sys_dir = new_dir
         tmp = filename.rpartition('.')
         format_file = tmp[-1]
-        new_user_dir = '/' + username + user_dir
+        new_user_dir = '/' + user_dir
         if format_file in self.TEXT or format_file in self.PIC or format_file in self.SONG:
             fil = {'filename': filename,
                    'user_dir': new_user_dir,
@@ -125,12 +137,13 @@ class UsersData:
     # Поиск файла по директории, проверяя тот ли это пользователь с помощью двух идентифкаторов username и user_id
     def find_files_in_dirs(self, username, user_id, user_dir):
         user_dir = '/' + user_dir
-        files = []
+        files = {}
+
         tmp = self.coll_d.find({'user_data.username': username,
                                 'user_data.user_id': user_id,
                                 'file.user_dir': user_dir})
         for i in tmp:
-            files.append(i['file']['filename'])
+            files[i['file']['filename']] = i['file']['sys_dir'][1:] + '/' + i['file']['filename']
         return files
 
     # Получение всех директорий, котрые есть у от той, в которой он находится, чтобы все вывести.
@@ -158,18 +171,34 @@ class UsersData:
             d[it] = user_dir + '/' + it
         return d
 
-    def get_dir(self, pathway):
-        d = OrderedDict()
-        sep_path = pathway.split('/')
-        for p in sep_path:
-            if p:
-                ind = pathway.find(p)
-                d[p] = pathway[:ind + len(p)]
-        return d
+    ''' Данный метод реализует подачу директорий пользователю и формате дикт
+    на вход подуется имя пользователя его уникальный номер и путь, в который он хочет попасть.
+    метод проверяет есть ли такой путь в БД и выдает словарь с ключами возможных переходов и 
+    ссылками на эти переходы в значениях.
+    Если указанного путя не существует, то пользователь получает сообщение об ошибке.    
+    '''
+    def get_dir(self, username, user_id, pathway):
+        sample = self.coll_d.find_one({'user_data.username': username,
+                                       'user_data.user_id': user_id,
+                                       'file': {}})
+        new_path = '/' + pathway
+        tmp = sample['pathways']
+        if new_path in tmp:
+            d = OrderedDict()
+            sep_path = pathway.split('/')
+            for p in sep_path:
+                if p:
+                    ind = pathway.find(p)
+                    d[p] = pathway[:ind + len(p)]
+            return d
+        else:
+            return 'There is no such directory'
 
     # Смена имени директории. Для смены имени нужны все директории в который есть эта директория и их замена этого
     # имени на новое име созданное пользователем.
     def change_dir_name(self, username, user_id, old_user_dir, new_dir_name):
+        if username == old_user_dir:
+            return 'This directory can not be modified'
         reg = old_user_dir
         c = []
         old_way = old_user_dir.rpartition('/')
@@ -177,10 +206,9 @@ class UsersData:
                                    'user_data.user_id': user_id,
                                    'file.user_dir': {'$regex': reg}})
         count = self.coll_d.find({'user_data.username': username,
-                                   'user_data.user_id': user_id,
-                                   'file.user_dir': {'$regex': reg}}).count()
-        if count == 0:
-            return 'Directory with this name does not exist'
+                                  'user_data.user_id': user_id,
+                                  'file.user_dir': {'$regex': reg}}).count()
+
         for sm in sample:
             tmp = sm['file']['user_dir']
             tmp_1 = tmp.split('/')
@@ -213,12 +241,14 @@ class UsersData:
 
         if tm:
             self.coll_d.update({'user_data.username': username,
-                            'user_data.user_id': user_id,
-                            'file':{}},
-                           {'$set': {
-                               'pathways': tm
-                           }
-                           })
+                                'user_data.user_id': user_id,
+                                'file':{}},
+                                {'$set': {
+                                    'pathways': tm
+                                    }
+                                })
+        if count == 0 and len(tmp) == 1:
+            return 'Directory with this name does not exist'
 
     # Удаление директории из основной ячейки и, если есть файлы лежащие в этой директории, то и удаление
     # их.(Пока только из бд.
@@ -232,14 +262,26 @@ class UsersData:
         for way in ways:
             if name_dir not in way:
                 new_ways.append(way)
-        self.coll_d.update_many({'user_data.username': username, 'user_data.user_id': user_id},
+        if len(ways) == len(new_ways):
+            return 'This folder does not exist'
+        self.coll_d.update({'user_data.username': username, 'user_data.user_id': user_id},
                                 {'$set':
                                      {'pathways': new_ways}
                                  })
-        reg = '^' + name_dir
+        reg = name_dir
+        sample = self.coll_d.find({'user_data.username': username,
+                                 'user_data.user_id': user_id,
+                                 'file.user_dir': {'$regex': reg}})
+
+        for samp in sample:
+            sys_path = samp['file']['sys_dir']
+            del_path = self.directory + sys_path + '/' + samp['file']['filename']
+            os.remove(del_path)
         self.coll_d.delete_many({'user_data.username': username,
                                  'user_data.user_id': user_id,
                                  'file.user_dir': {'$regex': reg}})
+
+
 
     def del_all(self):
         self.coll_d.remove(None)
@@ -270,29 +312,30 @@ f = False
 if f:
     b.del_all()
     b.create_dir_for_user('admin', 1)
-    b.add_file('admin', 1, 'words.txt')
-    b.add_file('admin', 1, 'users.pdf', '/new/b')
-    b.add_file('admin', 1, 'us.txt', '/new/b/c')
-    b.add_file('admin', 1, 'users.jpg', '/new/pic')
+#else:
+#    b.add_file('admin', 1, 'words.txt', 'admin')
+ #   b.create_folder('admin', 1, 'admin/tor')
+  #  b.add_file('admin', 1, 'users.pdf', 'admin/tor')
 
 
+
+# b.add_file('admin', 1, 'us.txt', '/new/b/c')
+# b.add_file('admin', 1, 'users.jpg', '/new/pic')
 # b.del_file('admin', 1, 'errors.png', 'admin')
-# # b.create_dir_for_user('eva', 122)
-# # b.add_file('eva', 122, 'text.pdf', '/my/gen')
-# # b.get_all()
-# # b.add_way('adam', 234, '/new')
-# #
-# # b.add_way('adam', 234, '/new/song')
-# # b.add_way('adam', 234, '/new/pic')
-# #
-# # print b.get_ways('adam', 234)
-# # # b.delete_dir('adam', 234, '/new/ma/mo')
-#print b.change_dir_name('admin', 1, 'admin/new/b', 'pdf_files')
+# b.create_dir_for_user('eva', 122)
+# b.add_file('eva', 122, 'text.pdf', '/my/gen')
+# b.get_all()
+# b.add_way('adam', 234, '/new')
+# b.add_way('adam', 234, '/new/song')
+# b.add_way('adam', 234, '/new/pic')
+# print b.get_ways('adam', 234)
+# b.delete_dir('adam', 234, '/new/ma/mo')
+# print b.change_dir_name('admin', 1, 'admin/my', 'mo')
 # t = b.find_files_in_dirs('admin', 1,'admin')
 # for ti in t:
 #     print ti
-#b.create_folder('admin',1,'admin/tor')
-#b.delete_dir('admin',1,'admin/new/files')
+#b.get_all()
+#print b.delete_dir('admin',1,'admin/me')
 b.get_all()
 
 

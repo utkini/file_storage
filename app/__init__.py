@@ -1,5 +1,6 @@
 # coding=utf-8
-from flask import Flask, render_template, request, redirect, flash, url_for, session, g, send_from_directory
+from flask import Flask, render_template, request, redirect, flash, url_for, session, g,\
+    send_from_directory, send_file
 from regForm import RegistrationForm
 from passlib.hash import sha256_crypt
 from register_and_login import Register, LogIn
@@ -123,7 +124,9 @@ def home_user(pathway):
         user = LogIn()
         folders = user_file.get_folder(username, session['user_id'], pathway)
         files = user_file.find_files_in_dirs(username, session['user_id'], pathway)
-        dirs = user_file.get_dir(pathway)
+        dirs = user_file.get_dir(username, session['user_id'], pathway)
+        if dirs == 'There is no such directory':
+            return redirect(page_not_found)
         if request.method == 'POST':
             flash(request.form)
             # check if the post request has the file part
@@ -135,23 +138,31 @@ def home_user(pathway):
                 if file and allowed_file(file.filename):
                     filename = secure_filename(file.filename)
                     flash(filename)
-                    path_file = user_file.add_file(session['username'],session['user_id'],filename)
+                    path_file = user_file.add_file(session['username'],session['user_id'],filename, pathway)
                     file.save(os.path.join(path_file, filename))
                     return redirect(url_for('home_user',
                                             pathway=pathway))
+                else:
+                    flash('The extension of these files are not supported by this system.')
+                    return redirect(url_for('home_user',pathway=pathway))
                 #файл есть
+            # Форма для изменения имени директории в которой сейчас находится пользователь
             elif 'new_dir_password' and 'new_dir' in request.form:
                 sep_path = pathway.split('/')
                 change_dir = sep_path[-1]
+                flash(secure_filename(request.form['new_dir']))
                 if sha256_crypt.verify(request.form['new_dir_password'], user.get_pwd(session['username'])):
                     error = user_file.change_dir_name(session['username'],session['user_id'],
                                                       pathway, request.form['new_dir'])
-                    tmp = pathway.split('/')
-                    tmp[-1] = request.form['new_dir']
-                    pathway = '/'.join(tmp)
-                    dirs = user_file.get_dir(pathway)
-                    folders = user_file.get_folder(session['username'], session['user_id'], pathway)
-                    files = user_file.find_files_in_dirs(session['username'], session['user_id'], pathway)
+                    if error is None:
+                        tmp = pathway.split('/')
+                        tmp[-1] = request.form['new_dir']
+                        pathway = '/'.join(tmp)
+                        dirs = user_file.get_dir(username, session['user_id'], pathway)
+                        if dirs == 'There is no such directory':
+                            return redirect(page_not_found)
+                        folders = user_file.get_folder(session['username'], session['user_id'], pathway)
+                        files = user_file.find_files_in_dirs(session['username'], session['user_id'], pathway)
                     return render_template('home.html',
                                            pathway=dirs,
                                            folders=folders,
@@ -164,11 +175,14 @@ def home_user(pathway):
                                            folders=folders,
                                            files=files,
                                            error_dir_p=error)
+            # Форма для создания папки в той директории, в которой находится пользователь.
             elif 'create_new_folder' and 'create_folder_password' in request.form:
                 if sha256_crypt.verify(request.form['create_folder_password'], user.get_pwd(session['username'])):
                     way = pathway + '/' + request.form['create_new_folder']
                     error = user_file.create_folder(username,session['user_id'],way)
-                    dirs = user_file.get_dir(pathway)
+                    dirs = user_file.get_dir(username, session['user_id'], pathway)
+                    if dirs == 'There is no such directory':
+                        return redirect(page_not_found)
                     folders = user_file.get_folder(session['username'], session['user_id'], pathway)
                     files = user_file.find_files_in_dirs(session['username'], session['user_id'], pathway)
                     return render_template('home.html',
@@ -183,6 +197,28 @@ def home_user(pathway):
                                            folders=folders,
                                            files=files,
                                            error_create_folder_p=error)
+            # Форма удаления директории и всех в ней папой и файлов.
+            elif 'del_dir_password' and 'del_dir' in request.form:
+                if sha256_crypt.verify(request.form['del_dir_password'], user.get_pwd(session['username'])):
+                    way = pathway + '/' + request.form['del_dir']
+                    error = user_file.delete_dir(username, session['user_id'], way)
+                    dirs = user_file.get_dir(username, session['user_id'], pathway)
+                    if dirs == 'There is no such directory':
+                        return redirect(page_not_found)
+                    folders = user_file.get_folder(session['username'], session['user_id'], pathway)
+                    files = user_file.find_files_in_dirs(session['username'], session['user_id'], pathway)
+                    return render_template('home.html',
+                                           pathway=dirs,
+                                           folders=folders,
+                                           files=files,
+                                           error_del_dir=error)
+                else:
+                    error = 'Incorrect password. Try again.'
+                    return render_template('home.html',
+                                           pathway=dirs,
+                                           folders=folders,
+                                           files=files,
+                                           error_del_dir_p=error)
         else:
             return render_template('home.html',
                                    pathway=dirs,
@@ -191,6 +227,11 @@ def home_user(pathway):
     except Exception as e:
         print str(e)
 
+@app.route('/download/<path:filepath>')
+def send_files(filepath):
+    filepath = './users/' + filepath
+    print filepath
+    return send_file(filepath,conditional=True)
 
 @app.route('/settings/', methods=['GET', 'POST'])
 def settings():
