@@ -6,28 +6,30 @@
     <br>
 <div style="margin-right: 300px; margin-left: 300px">
     <div>
-        <h6 style="text-align: center">If you want to change the user email, enter the password for confirmation</h6>
+        <h6 style="text-align: center">If you want to change email, enter new email and the password for confirmation.</h6>
         <form action="/settings/" method="post" >
             <div class="form-group">
-                <input type="text" class="form-control" id="InputPassword" placeholder="Password" name="password"
-                       value="{{ request.form.password }}">
-                {% if error_p %}
+                <input type="text" class="form-control" id="InputEmail" placeholder="Email"
+                       name="email"
+                       value="{{ request.form.email }}">
+                {% if error_email %}
                 <small id="pwdhelp" class="form-text text-muted">
-                    {{ error_p }}
+                    {{ error_email }}
                 </small>
                 {% endif %}
             </div>
             <div class="form-group">
-                <input type="text" class="form-control" id="InputUsername" placeholder="New Username" name="username"
-                       value="{{ request.form.username }}">
-                {% if error_u %}
+                <input type="password" class="form-control" id="InputPassword" placeholder="Password"
+                       name="email_password"
+                       value="{{ request.form.email_password }}">
+                {% if error_email_pwd %}
                 <small id="userhelp" class="form-text text-muted">
-                    {{ error_u }}
+                    {{ error_email_pwd }}
                 </small>
                 {% endif %}
             </div>
             <button type="submit" class="btn btn-primary bg-success" style="width: 480px;">
-                Change Username
+                Change Email address
             </button>
         </form>
     </div>
@@ -36,11 +38,21 @@
         <h6 style="text-align: center">Change password</h6>
         <form action="/settings/" method="post" >
             <div class="form-group">
-                <input type="text" class="form-control" id="InputPassword" placeholder="Enter password"
-                       name="password" value="{{ request.form.password }}">
-                {% if error_p %}
+                <input type="password" class="form-control" id="InputOldPassword" placeholder="Old password"
+                       name="old_password" value="{{ request.form.old_password }}">
+                {% if error_old_p %}
                 <small id="pwdhelp" class="form-text text-muted">
-                    {{ error_p }}
+                    {{ error_old_p }}
+                </small>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <input type="password" class="form-control" id="InputNewPassword" placeholder="New password"
+                       name="new_password" value="{{ request.form.new_password }}">
+                {% if error_new_p %}
+                <small id="pwdhelp" class="form-text text-muted">
+                    {{ error_new_p }}
                 </small>
                 {% endif %}
             </div>

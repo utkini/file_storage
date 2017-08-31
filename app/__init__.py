@@ -264,8 +264,8 @@ def send_files(filepath):
 @app.route('/settings/', methods=['GET', 'POST'])
 @login_required
 def settings():
-    if request.args.values():
-        return 'hyh'
+    if request.method == 'POST':
+        pass
     else:
         return render_template('settings.html')
 
