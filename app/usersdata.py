@@ -50,12 +50,12 @@ class UsersData:
     На сервере файл сохраняется в папках созданных с помощью алгоритма md5.
     '''
     def add_file(self, username, user_id, filename, user_dir=''):
-
+        name_file = filename.rpartition('.')[0]
         new_user_dir = '/' + user_dir
         sample = self.coll_d.find({'user_data.username': username,
                                    'user_data.user_id': user_id,
                                    'file.user_dir': new_user_dir,
-                                   'file.filename': {'$regex': filename}
+                                   'file.filename': {'$regex': name_file}
                                    }).count()
         if sample != 0:
             sep_filename = filename.rpartition('.')
@@ -280,6 +280,28 @@ class UsersData:
         if count == 0 and len(tmp) == 1:
             return 'Directory with this name does not exist'
 
+    def rename_file(self, username, user_id, user_dir, old_filename, new_filename):
+        user_dir = '/' + user_dir
+        sample = self.coll_d.find_one({'user_data.username': username,
+                                       'user_data.user_id': user_id,
+                                       'file.user_dir': user_dir,
+                                       'file.filename': old_filename})
+        tmp = sample['file']['filename']
+        old_extension = tmp.rpartition('.')[-1]
+        new_extension = new_filename.rpartition('.')[-1]
+        if old_extension == new_extension:
+            self.coll_d.update({'user_data.username': username,
+                                'user_data.user_id': user_id,
+                                'file.user_dir': user_dir,
+                                'file.filename':old_filename},
+                               {'$set': {'file.filename': new_filename}})
+            file_path = self.directory + sample['file']['sys_dir'] + '/'
+            os.rename(file_path + tmp, file_path + new_filename)
+        else:
+            ans = 'You can not change the extension file' + old_extension + 'to an extension' + new_extension
+            return  ans
+
+
     # Удаление директории из основной ячейки и, если есть файлы лежащие в этой директории, то и удаление
     # их.(Пока только из бд.
     # !!!!!из системы удаление не происходит!!!!!
@@ -339,7 +361,7 @@ class UsersData:
 
 b = UsersData()
 
-f = False
+f = True
 if f:
     b.del_all()
     b.create_dir_for_user('admin', 1)
@@ -367,6 +389,7 @@ if f:
 #print b.delete_dir('admin',1,'admin/me')
 #b.del_file('admin',1,'words.txt','admin/ade')
 #print b.get_dir('admin',1,'admin/admi')
+#b.rename_file('ihgorek',2,'ihgorek','words.txt','file.txt')
 b.get_all()
 
 

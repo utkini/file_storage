@@ -242,6 +242,20 @@ def home_user(pathway):
                                            folders=folders,
                                            files=files,
                                            error_del_file_p=error)
+            elif 'rename_file_new' and 'rename_file_old' in request.form:
+                error = user_file.rename_file(username,session['user_id'],pathway,
+                                              request.form['rename_file_old'],request.form['rename_file_new'])
+                dirs = user_file.get_dir(username, session['user_id'], pathway)
+                if dirs == 'There is no such directory':
+                    return redirect(page_not_found)
+                folders = user_file.get_folder(session['username'], session['user_id'], pathway)
+                files = user_file.find_files_in_dirs(session['username'], session['user_id'], pathway)
+                return render_template('home.html',
+                                       pathway=dirs,
+                                       folders=folders,
+                                       files=files,
+                                       error_rename_file=error)
+
         else:
             return render_template('home.html',
                                    pathway=dirs,
