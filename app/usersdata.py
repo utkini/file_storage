@@ -50,7 +50,20 @@ class UsersData:
     На сервере файл сохраняется в папках созданных с помощью алгоритма md5.
     '''
     def add_file(self, username, user_id, filename, user_dir=''):
-        file_dir = user_dir + '/' + filename
+
+        new_user_dir = '/' + user_dir
+        sample = self.coll_d.find({'user_data.username': username,
+                                   'user_data.user_id': user_id,
+                                   'file.user_dir': new_user_dir,
+                                   'file.filename': {'$regex': filename}
+                                   }).count()
+        if sample != 0:
+            sep_filename = filename.rpartition('.')
+            new_filename = sep_filename[0] + '(' + str(sample) + ')'
+            new_filename = new_filename + '.' + sep_filename[-1]
+        else:
+            new_filename = filename
+        file_dir = user_dir + '/' + new_filename
         m = hashlib.md5()
         m.update(file_dir)
         file_dir = self.directory + '/' + username + '/' + m.hexdigest()[0:2]
@@ -68,17 +81,17 @@ class UsersData:
             except Exception as e:
                 print str(e)
         sys_dir = new_dir
-        tmp = filename.rpartition('.')
+        tmp = new_filename.rpartition('.')
         format_file = tmp[-1]
-        new_user_dir = '/' + user_dir
-        count = self.coll_d.find({'user_data.username': username,
-                                  'user_data.user_id': user_id,
-                                  'file.user_dir': new_user_dir,
-                                  'file.filename':filename}).count()
-        if count == 1:
-            return 'This file exist'
+
+        # count = self.coll_d.find({'user_data.username': username,
+        #                           'user_data.user_id': user_id,
+        #                           'file.user_dir': new_user_dir,
+        #                           'file.filename':filename}).count()
+        # if count == 1:
+        #     return 'This file exist'
         if format_file in self.TEXT or format_file in self.PIC or format_file in self.SONG:
-            fil = {'filename': filename,
+            fil = {'filename': new_filename,
                    'user_dir': new_user_dir,
                    'sys_dir': sys_dir}
             self.coll_d.insert({
@@ -90,17 +103,20 @@ class UsersData:
                 'file': fil
             })
             cur = self.coll_d.find_one({'user_data.username': username,
-                                'user_data.user_id': user_id,
-                                'file':{}})
+                                        'user_data.user_id': user_id,
+                                        'file':{}})
             s = cur['pathways']
             s = set(s)
             s.add(new_user_dir)
             s = list(s)
             self.coll_d.update({'user_data.username': username,
                                 'user_data.user_id': user_id,
-                                'file':{}},
+                                'file': {} },
                                 {'$set': {'pathways': s}})
-            return file_dir
+            d = {}
+            d['file_dir']=file_dir
+            d['filename'] = new_filename
+            return d
         else:
             return 'The extension of these files are not supported by this system.'
 
@@ -327,12 +343,14 @@ f = False
 if f:
     b.del_all()
     b.create_dir_for_user('admin', 1)
+    b.create_dir_for_user('ihgorek', 2)
 #else:
 #    b.add_file('admin', 1, 'words.txt', 'admin')
  #   b.create_folder('admin', 1, 'admin/tor')
-  #  b.add_file('admin', 1, 'users.pdf', 'admin/tor')
+ #  b.add_file('admin', 1, 'users.pdf', 'admin/tor')
 
-
+#b.add_file('admin', 1, 'words.txt', 'admin')
+#b.add_file('admin', 1, 'words.txt', 'admin')
 # b.create_dir_for_user('eva', 122)
 #print b.add_file('admin', 1, 'words.txt', 'admin/dai')
 # b.get_all()

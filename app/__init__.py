@@ -141,14 +141,10 @@ def home_user(pathway):
                     filename = secure_filename(file.filename)
                     flash(filename)
                     path_file = user_file.add_file(session['username'],session['user_id'],filename, pathway)
-                    if path_file == 'This file exist':
-                        flash('This file exist!')
+                    if type(path_file) == dict:
+                        file.save(os.path.join(path_file['file_dir'], path_file['filename']))
                         return redirect(url_for('home_user',
-                                            pathway=pathway))
-                    else:
-                        file.save(os.path.join(path_file, filename))
-                    return redirect(url_for('home_user',
-                                            pathway=pathway))
+                                                pathway=pathway))
                 else:
                     flash('The extension of these files are not supported by this system.')
                     return redirect(url_for('home_user',pathway=pathway))
