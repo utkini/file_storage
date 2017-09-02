@@ -9,7 +9,7 @@
         <h6 style="text-align: center">If you want to change email, enter new email and the password for confirmation.</h6>
         <form action="/settings/" method="post" >
             <div class="form-group">
-                <input type="text" class="form-control" id="InputEmail" placeholder="Email"
+                <input type="email" class="form-control" id="InputEmail" placeholder="Email"
                        name="email"
                        value="{{ request.form.email }}">
                 {% if error_email %}

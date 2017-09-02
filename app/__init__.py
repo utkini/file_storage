@@ -1,5 +1,5 @@
 # coding=utf-8
-from flask import Flask, render_template, request, redirect, flash, url_for, session, g,\
+from flask import Flask, render_template, request, redirect, flash, url_for, session, g, \
     send_from_directory, send_file
 from regForm import RegistrationForm
 from passlib.hash import sha256_crypt
@@ -11,11 +11,11 @@ import os
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = '/home/ihgorek/Documents/file_storage/app/users'
-ALLOWED_EXTENSIONS = {'txt', 'doc', 'docx', 'docm', 'dotm', 'dotx', 'pdf',      # TEXT
+ALLOWED_EXTENSIONS = {'txt', 'doc', 'docx', 'docm', 'dotm', 'dotx', 'pdf',  # TEXT
                       'xls', 'xlsx', 'xlsm', 'xltx', 'xlt', 'xltm', 'pptx',
                       'ppt', 'ppsx', 'pps', 'potx', 'pot', 'ppa', 'ppam',
-                      'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'bmp',     # PICTURE
-                      'wav', 'mp3', 'wma', 'ogg', 'aac', 'flac'}            # SONG
+                      'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'bmp',  # PICTURE
+                      'wav', 'mp3', 'wma', 'ogg', 'aac', 'flac'}  # SONG
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
@@ -37,6 +37,7 @@ def login_required(f):
         else:
             flash('You need to log in first')
             return redirect(url_for('login_page'))
+
     return wrap
 
 
@@ -99,7 +100,7 @@ def register_page():
                 session['user_id'] = new_user.get_id_user(username)
                 users_file = UsersData()
                 users_file.create_dir_for_user(session['username'], session['user_id'])
-                return redirect(url_for('home_user',pathway=session['username']))
+                return redirect(url_for('home_user', pathway=session['username']))
 
         return render_template('register.html',
                                form=form,
@@ -140,22 +141,22 @@ def home_user(pathway):
                 if file and allowed_file(file.filename):
                     filename = secure_filename(file.filename)
                     flash(filename)
-                    path_file = user_file.add_file(session['username'],session['user_id'],filename, pathway)
+                    path_file = user_file.add_file(session['username'], session['user_id'], filename, pathway)
                     if type(path_file) == dict:
                         file.save(os.path.join(path_file['file_dir'], path_file['filename']))
                         return redirect(url_for('home_user',
                                                 pathway=pathway))
                 else:
                     flash('The extension of these files are not supported by this system.')
-                    return redirect(url_for('home_user',pathway=pathway))
-                #файл есть
+                    return redirect(url_for('home_user', pathway=pathway))
+                    # файл есть
             # Форма для изменения имени директории в которой сейчас находится пользователь
             elif 'new_dir_password' and 'new_dir' in request.form:
                 sep_path = pathway.split('/')
                 change_dir = sep_path[-1]
                 flash(secure_filename(request.form['new_dir']))
                 if sha256_crypt.verify(request.form['new_dir_password'], user.get_pwd(session['username'])):
-                    error = user_file.change_dir_name(session['username'],session['user_id'],
+                    error = user_file.change_dir_name(session['username'], session['user_id'],
                                                       pathway, request.form['new_dir'])
                     if error is None:
                         tmp = pathway.split('/')
@@ -182,7 +183,7 @@ def home_user(pathway):
             elif 'create_new_folder' and 'create_folder_password' in request.form:
                 if sha256_crypt.verify(request.form['create_folder_password'], user.get_pwd(session['username'])):
                     way = pathway + '/' + request.form['create_new_folder']
-                    error = user_file.create_folder(username,session['user_id'],way)
+                    error = user_file.create_folder(username, session['user_id'], way)
                     dirs = user_file.get_dir(username, session['user_id'], pathway)
                     if dirs == 'There is no such directory':
                         return redirect(page_not_found)
@@ -224,7 +225,7 @@ def home_user(pathway):
                                            error_del_dir_p=error)
             elif 'del_file' and 'del_file_password' in request.form:
                 if sha256_crypt.verify(request.form['del_file_password'], user.get_pwd(session['username'])):
-                    error = user_file.del_file(username, session['user_id'],request.form['del_file'],pathway)
+                    error = user_file.del_file(username, session['user_id'], request.form['del_file'], pathway)
                     dirs = user_file.get_dir(username, session['user_id'], pathway)
                     if dirs == 'There is no such directory':
                         return redirect(page_not_found)
@@ -243,8 +244,8 @@ def home_user(pathway):
                                            files=files,
                                            error_del_file_p=error)
             elif 'rename_file_new' and 'rename_file_old' in request.form:
-                error = user_file.rename_file(username,session['user_id'],pathway,
-                                              request.form['rename_file_old'],request.form['rename_file_new'])
+                error = user_file.rename_file(username, session['user_id'], pathway,
+                                              request.form['rename_file_old'], request.form['rename_file_new'])
                 dirs = user_file.get_dir(username, session['user_id'], pathway)
                 if dirs == 'There is no such directory':
                     return redirect(page_not_found)
@@ -264,21 +265,63 @@ def home_user(pathway):
     except Exception as e:
         print str(e)
 
+
 @app.route('/download/<path:filepath>')
 @login_required
 def send_files(filepath):
     filepath = './users/' + filepath
     print filepath
-    return send_file(filepath,conditional=True)
+    return send_file(filepath, conditional=True)
+
 
 @app.route('/settings/', methods=['GET', 'POST'])
 @login_required
 def settings():
     if request.method == 'POST':
-        pass
+        user = LogIn()
+        if 'email' and 'email_password' in request.form:
+            if sha256_crypt.verify(request.form['email_password'], user.get_pwd(session['username'])):
+                error = user.change_email(session['username'],session['user_id'],request.form['email'])
+                if error is None:
+                    flash('Email is changed')
+                    return render_template('settings.html')
+                else:
+                    return render_template('settings.html',
+                                           error_email=error)
+            else:
+                error = 'Incorrect password. Try again.'
+                return render_template('settings.html',
+                                       error_email_pwd=error)
+        if 'old_password' and 'new_password' in request.form:
+            if sha256_crypt.verify(request.form['old_password'], user.get_pwd(session['username'])):
+                error = user.change_password(session['username'],session['user_id'],request.form['new_password'])
+                if error is None:
+                    flash('Password has changed')
+                    return render_template('settings.html')
+                else:
+                    return render_template('settings.html',
+                                       error_new_p=error)
+            else:
+                error = 'Incorrect password. Try again.'
+                return render_template('settings.html',
+                                       error_old_p=error)
+
     else:
         return render_template('settings.html')
 
+
+@app.route('/delete/')
+@login_required
+def delete_page():
+    user = LogIn()
+    error = user.del_user(session['username'],session['user_id'])
+    if error is None:
+        session.clear()
+        flash('your user has been deleted')
+        gc.collect()
+    else:
+        flash("Something's wrong")
+    return redirect(url_for('homepage'))
 
 
 # Обработчики ошибок на сайте. 404 - если страница не найдена и 405 - если метода нет

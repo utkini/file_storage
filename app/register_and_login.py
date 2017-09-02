@@ -68,13 +68,17 @@ class Register:
         self.coll.remove(None)
         return 'del all'
 
-a= Register()
+
+a = Register()
 tmp = a.get_all()
 for t in tmp:
     print t
-# Данный класс реализует проверку пользователя при авторизации. сравнивает его логин и пароль.
+
+'''Данный класс реализует проверку пользователя при авторизации. сравнивает его логин и пароль.
 # Все пароли закодированы с помощью sha-256 и хранятся в БД. через html пользователь может сварерить свой
-# ввод пароля с тем паролем, котрый хранится в БД
+# ввод пароля с тем паролем, котрый хранится в БД'''
+
+
 class LogIn:
     def __init__(self):
         with MongoClient('localhost', 27017) as mongo:
@@ -88,6 +92,10 @@ class LogIn:
         else:
             return 'ok'
 
+    def get_user_id(self, username):
+        tmp = self.coll.find_one({'username': username})
+        return tmp['user_id']
+
     def get_pwd(self, username):
         tmp = self.coll.find_one({'username': username})
         if tmp is None:
@@ -95,6 +103,26 @@ class LogIn:
         else:
             return tmp['password']
 
-    def get_user_id(self,username):
-        tmp = self.coll.find_one({'username': username})
-        return tmp['user_id']
+    def change_password(self, username, user_id, password):
+        try:
+            self.coll.update({'username': username,
+                              'user_id': user_id},
+                             {'$set': {'password': password}})
+        except Exception:
+            return 'Something is wrong'
+
+    def del_user(self, username, user_id):
+        try:
+            self.coll.delete_one(({'username': username,
+                               'user_id': user_id}))
+        except Exception:
+            return 'This user does not exist'
+
+    def change_email(self, username, user_id, new_email):
+        try:
+            self.coll.update({'username': username,
+                              'user_id': user_id},
+                             {'$set': {'email': new_email}})
+        except Exception:
+            return 'Something is wrong'
+

@@ -1,6 +1,7 @@
 # coding=utf-8
 import hashlib
 import os
+import shutil
 from collections import OrderedDict
 
 from pymongo import MongoClient
@@ -359,6 +360,20 @@ class UsersData:
                            }
                            })
 
+    def delete_user(self, username, user_id):
+        sample = self.coll_d.find({'user_data.username':username,
+                                   'user_data.user_id':user_id})
+        for cur in sample:
+            if cur['file']['sys_dir']:
+                one_dir = cur['file']['sys_dir']
+                sys_dir = self.directory + one_dir
+                del_path = sys_dir + '/' + cur['file']['filename']
+                os.remove(del_path)
+                os.removedirs(sys_dir)
+        self.coll_d.delete_many({'user_data.username': username,
+                                'user_data.user_id': user_id})
+
+
 b = UsersData()
 
 f = True
@@ -390,6 +405,7 @@ if f:
 #b.del_file('admin',1,'words.txt','admin/ade')
 #print b.get_dir('admin',1,'admin/admi')
 #b.rename_file('ihgorek',2,'ihgorek','words.txt','file.txt')
+b.delete_user('ihgorek',2)
 b.get_all()
 
 
