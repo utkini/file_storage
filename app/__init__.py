@@ -293,8 +293,9 @@ def settings():
                 return render_template('settings.html',
                                        error_email_pwd=error)
         if 'old_password' and 'new_password' in request.form:
+            password = sha256_crypt.encrypt(str(request.form['new_password']))
             if sha256_crypt.verify(request.form['old_password'], user.get_pwd(session['username'])):
-                error = user.change_password(session['username'],session['user_id'],request.form['new_password'])
+                error = user.change_password(session['username'],session['user_id'],password)
                 if error is None:
                     flash('Password has changed')
                     return render_template('settings.html')
@@ -314,10 +315,12 @@ def settings():
 @login_required
 def delete_page():
     user = LogIn()
-    error = user.del_user(session['username'],session['user_id'])
-    if error is None:
+    user_files = UsersData()
+    error_login = user.del_user(session['username'],session['user_id'])
+    error_files = user_files.delete_user(session['username'],session['user_id'])
+    if error_login is None and error_files is None:
         session.clear()
-        flash('your user has been deleted')
+        flash('Your user has been deleted')
         gc.collect()
     else:
         flash("Something's wrong")
