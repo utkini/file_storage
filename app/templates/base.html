@@ -16,15 +16,15 @@
   </head>
 
   <header>
-    <div class="navbar bg-success" >
+    <div class="navbar bg-success" style="max-font-size: 90%" >
         {% if session.logged_in %}
             <a class="navbar-brand" href="/home/{{ session.username }}">
-            <img style="max-width: 180px; margin-top: -20px"
+            <img style="max-width: 55%; margin-top: -20px"
                  src="{{ url_for('static', filename='images/mainlogo1.png') }}">
             </a>
         {% else %}
         <a class="navbar-brand" href="/">
-            <img style="max-width: 180px; margin-top: -20px"
+            <img style="max-width: 55%; margin-top: -20px"
                  src="{{ url_for('static', filename='images/mainlogo1.png') }}">
         </a>
         {% endif %}

@@ -4,7 +4,7 @@
 
 <div class="container">
     <br>
-    <div style="margin-right: 700px">
+    <div style="margin-right: 1vw; max-width: 380px">
         <h5><p style="text-align: center">Create an account</h5>
         {% from "_formhelpers.html" import render_field %}
         <form action="/register/" method="post" >
@@ -27,7 +27,7 @@
                 {{ render_field(form.confirm) }}
             </div>
             <div class="form-group">
-                <button type="submit" class="btn btn-primary bg-success" style="width: 380px">Sign up</button>
+                <button type="submit" class="btn btn-primary bg-success" style="width: 100%">Sign up</button>
                 <p style="text-align: center" >
                     By signing up, you agree to our
                     <br>

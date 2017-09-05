@@ -5,11 +5,11 @@
 <div class="container">
     <br>
 
-    <div style="margin-right: 700px">
+    <div style="margin-right: 1vw; max-width: 400px">
         <h5 style="text-align: center">Sign in</h5>
         <form action="" method="post" >
             <div class="form-group">
-                <input type="text" class="form-control" id="InputUsername" placeholder="Enter username" name="username"
+                <input type="text" class="form-control" id="InputUsername" placeholder="Username" name="username"
                        value="{{ request.form.username }}">
                 {% if error_u %}
                 <small id="userhelp" class="form-text text-muted">
@@ -26,7 +26,7 @@
                 </small>
                 {% endif %}
             </div>
-            <button type="submit" class="btn btn-primary bg-success" style="width: 380px;">Login</button>
+            <button type="submit" class="btn btn-primary bg-success" style="width: 100%;">Login</button>
         </form>
     </div>
 
