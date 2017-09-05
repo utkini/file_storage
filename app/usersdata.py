@@ -282,25 +282,28 @@ class UsersData:
             return 'Directory with this name does not exist'
 
     def rename_file(self, username, user_id, user_dir, old_filename, new_filename):
-        user_dir = '/' + user_dir
-        sample = self.coll_d.find_one({'user_data.username': username,
-                                       'user_data.user_id': user_id,
-                                       'file.user_dir': user_dir,
-                                       'file.filename': old_filename})
-        tmp = sample['file']['filename']
-        old_extension = tmp.rpartition('.')[-1]
-        new_extension = new_filename.rpartition('.')[-1]
-        if old_extension == new_extension:
-            self.coll_d.update({'user_data.username': username,
-                                'user_data.user_id': user_id,
-                                'file.user_dir': user_dir,
-                                'file.filename':old_filename},
-                               {'$set': {'file.filename': new_filename}})
-            file_path = self.directory + sample['file']['sys_dir'] + '/'
-            os.rename(file_path + tmp, file_path + new_filename)
-        else:
-            ans = 'You can not change the extension file' + old_extension + 'to an extension' + new_extension
-            return  ans
+        try:
+            user_dir = '/' + user_dir
+            sample = self.coll_d.find_one({'user_data.username': username,
+                                           'user_data.user_id': user_id,
+                                           'file.user_dir': user_dir,
+                                           'file.filename': old_filename})
+            tmp = sample['file']['filename']
+            old_extension = tmp.rpartition('.')[-1]
+            new_extension = new_filename.rpartition('.')[-1]
+            if old_extension == new_extension:
+                self.coll_d.update({'user_data.username': username,
+                                    'user_data.user_id': user_id,
+                                    'file.user_dir': user_dir,
+                                    'file.filename':old_filename},
+                                   {'$set': {'file.filename': new_filename}})
+                file_path = self.directory + sample['file']['sys_dir'] + '/'
+                os.rename(file_path + tmp, file_path + new_filename)
+            else:
+                ans = 'You can not change the extension file' + old_extension + 'to an extension' + new_extension
+                return ans
+        except Exception:
+            return 'Such file does not exist'
 
 
     # Удаление директории из основной ячейки и, если есть файлы лежащие в этой директории, то и удаление
