@@ -324,6 +324,10 @@ def delete_page():
         flash("Something's wrong")
     return redirect(url_for('homepage'))
 
+@app.route('/support/')
+def support():
+    return render_template('support.html')
+
 
 # Обработчики ошибок на сайте. 404 - если страница не найдена и 405 - если метода нет
 @app.errorhandler(404)
