@@ -94,8 +94,11 @@ class LogIn:
             return 'ok'
 
     def get_user_id(self, username):
-        tmp = self.coll.find_one({'username': username})
-        return tmp['user_id']
+        try:
+            tmp = self.coll.find_one({'username': username})
+            return tmp['user_id']
+        except Exception:
+            return 'This user does not exist'
 
     def get_pwd(self, username):
         tmp = self.coll.find_one({'username': username})
