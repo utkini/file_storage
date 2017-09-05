@@ -14,7 +14,7 @@ class UsersData:
     изменений имен файлов и директорий, получение файлов в директории, удаление директорий,
     удаление файлов, обновление файлов. просмотр всех значений в БД удаление всех значений из БД.
     """
-    directory = '/home/ihgorek/Documents/file_storage/app/users'
+    directory = '/var/opt/users'
     TEXT = {'txt', 'doc', 'docx', 'docm', 'dotm', 'dotx', 'pdf',
             'xls', 'xlsx', 'xlsm', 'xltx', 'xlt', 'xltm', 'pptx',
             'ppt', 'ppsx', 'pps', 'potx', 'pot', 'ppa', 'ppam'}
@@ -374,8 +374,8 @@ b = UsersData()
 f = True
 if f:
     b.del_all()
-    b.create_dir_for_user('admin', 1)
-    b.create_dir_for_user('ihgorek', 2)
+#b.create_dir_for_user('admin', 1)
+#b.create_dir_for_user('ihgorek', 2)
 #else:
 #    b.add_file('admin', 1, 'words.txt', 'admin')
  #   b.create_folder('admin', 1, 'admin/tor')

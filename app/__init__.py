@@ -10,7 +10,7 @@ import gc
 import os
 from werkzeug.utils import secure_filename
 
-UPLOAD_FOLDER = '/home/ihgorek/Documents/file_storage/app/users'
+UPLOAD_FOLDER = '/var/opt/users'
 ALLOWED_EXTENSIONS = {'txt', 'doc', 'docx', 'docm', 'dotm', 'dotx', 'pdf',  # TEXT
                       'xls', 'xlsx', 'xlsm', 'xltx', 'xlt', 'xltm', 'pptx',
                       'ppt', 'ppsx', 'pps', 'potx', 'pot', 'ppa', 'ppam',
@@ -269,7 +269,7 @@ def home_user(pathway):
 @app.route('/download/<path:filepath>')
 @login_required
 def send_files(filepath):
-    filepath = './users/' + filepath
+    filepath = '/var/opt/users/' + filepath
     print filepath
     return send_file(filepath, conditional=True)
 
