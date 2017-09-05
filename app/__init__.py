@@ -131,7 +131,6 @@ def home_user(pathway):
         if dirs == 'There is no such directory':
             return redirect(page_not_found)
         if request.method == 'POST':
-            flash(request.form)
             # check if the post request has the file part
             if 'file' in request.files:
                 file = request.files['file']
@@ -154,7 +153,6 @@ def home_user(pathway):
             elif 'new_dir_password' and 'new_dir' in request.form:
                 sep_path = pathway.split('/')
                 change_dir = sep_path[-1]
-                flash(secure_filename(request.form['new_dir']))
                 if sha256_crypt.verify(request.form['new_dir_password'], user.get_pwd(session['username'])):
                     error = user_file.change_dir_name(session['username'], session['user_id'],
                                                       pathway, request.form['new_dir'])
