@@ -374,7 +374,7 @@ class UsersData:
 
 b = UsersData()
 
-f = True
+f = False
 if f:
     b.del_all()
 #b.create_dir_for_user('admin', 1)
