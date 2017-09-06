@@ -110,10 +110,10 @@ class Register(object):
             return str(e)
 
     def del_user(self, username):
-        """
+        """Use this method to remove a user from the database
 
-        :param username:
-        :return:
+        :param username: Integer or String : Unique username
+        :return: String : username has been deleted. If false - > Error message
         """
         try:
             self.coll.remove({'username': username})
@@ -123,7 +123,7 @@ class Register(object):
             return str(e)
 
     def del_all(self):
-        """
+        """Use this method to completely clean the database
 
         :return:
         """
@@ -139,25 +139,34 @@ for t in tmp:
 
 
 class LogIn(object):
-    """
-    Данный класс реализует проверку пользователя при авторизации. сравнивает его логин и пароль.
-    Все пароли закодированы с помощью sha-256 и хранятся в БД. через html пользователь может сварерить свой
-    ввод пароля с тем паролем, котрый хранится в БД
-    """
+    """This is LogIn class
 
-    def __init__(self):
+    This class implements a user verification when authorizing. compares his login and password.
+    All passwords are encrypted using sha-256 and stored in the database. through html the user can weld his own
+    Enter the password with the password that is stored in the database
+    Methods:
+        loginUser
+        getUserID
+        getPwd
+        changePassword
+        delUser
+        changeEmail
         """
 
+    def __init__(self):
+        """Creating a link to the MongoDB
+
+        :return: Register object.
         """
         with MongoClient('localhost', 27017) as mongo:
             db = mongo.db_storage
             self.coll = db.coll_reg
 
     def login_user(self, username):
-        """
+        """Use this method to verify the user in the database
 
-        :param username:
-        :return:
+        :param username: String or Integer: Unique username
+        :return: String : ok. if False - > "bad"
         """
         tmp = self.coll.find_one({'username': username})
         if tmp is None:
@@ -166,10 +175,13 @@ class LogIn(object):
             return 'ok'
 
     def get_user_id(self, username):
-        """
+        """Use this method to get the user ID
 
-        :param username:
-        :return:
+        If this method does not find such a user in the database, then an error message will be displayed:
+        "This user does not exist"
+
+        :param username: String or Integer : Unique username
+        :return: Integer : user ID/ if False - > error message
         """
         try:
             tmp = self.coll.find_one({'username': username})
@@ -193,12 +205,12 @@ class LogIn(object):
             return tmp['password']
 
     def change_password(self, username, user_id, password):
-        """
+        """Use this method to change the user's password in the database
 
-        :param username:
-        :param user_id:
-        :param password:
-        :return:
+        :param username: String or Integer : Unique username
+        :param user_id: Integer : Unique user ID
+        :param password: Unicode : md5.crypt password
+        :return: None. If false - > error message
         """
         try:
             self.coll.update({'username': username,
@@ -208,11 +220,11 @@ class LogIn(object):
             return 'Something is wrong'
 
     def del_user(self, username, user_id):
-        """
+        """Use this method to remove a user from the database
 
-        :param username:
-        :param user_id:
-        :return:
+        :param username: String or Integer : Unique username
+        :param user_id: Integer : Unique user ID
+        :return: None. If False - > error message
         """
         try:
             self.coll.delete_one(({'username': username,
@@ -221,16 +233,23 @@ class LogIn(object):
             return 'This user does not exist'
 
     def change_email(self, username, user_id, new_email):
-        """
+        """Use this method to change email address from the database
 
-        :param username:
-        :param user_id:
-        :param new_email:
-        :return:
+        If the new e-mail address entered does not match the e-mail address,
+        you receive an error message:
+        "This email does not supported by system"
+
+        :param username: String or Integer : Unique username
+        :param user_id: Integer : Unique user ID
+        :param new_email: String : new name email address
+        :return: None. If False - > error message
         """
         try:
-            self.coll.update({'username': username,
-                              'user_id': user_id},
-                             {'$set': {'email': new_email}})
+            if type(new_email) == str and '@' in new_email and '.' in new_email:
+                self.coll.update({'username': username,
+                                  'user_id': user_id},
+                                 {'$set': {'email': new_email}})
+            else:
+                return 'This email does not supported by system'
         except Exception:
-            return 'Something is wrong'
+            return 'This email does not exist'
