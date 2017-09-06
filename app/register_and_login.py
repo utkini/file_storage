@@ -125,7 +125,7 @@ class Register(object):
     def del_all(self):
         """Use this method to completely clean the database
 
-        :return:
+        :return: String : "del all"
         """
         self.coll.remove(None)
         return 'del all'
