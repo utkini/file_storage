@@ -138,7 +138,7 @@ class Register(object):
 
 
 a = Register()
-# a.del_all()
+a.del_all()
 tmp = a.get_all()
 for t in tmp:
     print t

@@ -34,7 +34,7 @@ class UsersData(object):
 
         :return: UserData object.
         """
-        self.directory = '/home/ihgorek/Documents/file_storage/app/users'
+        self.directory = '/home/user1/my_flask_app/users'
         self.TEXT = {'txt', 'doc', 'docx', 'docm', 'dotm', 'dotx', 'pdf',
                      'xls', 'xlsx', 'xlsm', 'xltx', 'xlt', 'xltm', 'pptx',
                      'ppt', 'ppsx', 'pps', 'potx', 'pot', 'ppa', 'ppam'}

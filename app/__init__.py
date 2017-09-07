@@ -10,7 +10,7 @@ import gc
 import os
 from werkzeug.utils import secure_filename
 
-UPLOAD_FOLDER = '/home/ihgorek/Documents/file_storage/app/users'
+UPLOAD_FOLDER = '/home/user1/my_flask_app/users'
 ALLOWED_EXTENSIONS = {'txt', 'doc', 'docx', 'docm', 'dotm', 'dotx', 'pdf',  # TEXT
                       'xls', 'xlsx', 'xlsm', 'xltx', 'xlt', 'xltm', 'pptx',
                       'ppt', 'ppsx', 'pps', 'potx', 'pot', 'ppa', 'ppam',
@@ -270,7 +270,7 @@ def home_user(pathway):
 @app.route('/download/<path:filepath>')
 @login_required
 def send_files(filepath):
-    filepath = '/home/ihgorek/Documents/file_storage/app/users/' + filepath
+    filepath = '/home/user1/my_flask_app/users/' + filepath
     print filepath
     return send_file(filepath, conditional=True)
 
