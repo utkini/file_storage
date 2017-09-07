@@ -10,12 +10,13 @@ import gc
 import os
 from werkzeug.utils import secure_filename
 
-UPLOAD_FOLDER = '/var/opt/users'
+UPLOAD_FOLDER = '/home/ihgorek/Documents/file_storage/app/users'
 ALLOWED_EXTENSIONS = {'txt', 'doc', 'docx', 'docm', 'dotm', 'dotx', 'pdf',  # TEXT
                       'xls', 'xlsx', 'xlsm', 'xltx', 'xlt', 'xltm', 'pptx',
                       'ppt', 'ppsx', 'pps', 'potx', 'pot', 'ppa', 'ppam',
                       'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'bmp',  # PICTURE
-                      'wav', 'mp3', 'wma', 'ogg', 'aac', 'flac'}  # SONG
+                      'wav', 'mp3', 'wma', 'ogg', 'aac', 'flac'  # SONG
+                      'avi','mkv','mp4','mpeg'} # VIDEO
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
@@ -139,7 +140,6 @@ def home_user(pathway):
                     return redirect(request.url)
                 if file and allowed_file(file.filename):
                     filename = secure_filename(file.filename)
-                    flash(filename)
                     path_file = user_file.add_file(session['username'], session['user_id'], filename, pathway)
                     if type(path_file) == dict:
                         file.save(os.path.join(path_file['file_dir'], path_file['filename']))
@@ -202,8 +202,11 @@ def home_user(pathway):
             # Форма удаления директории и всех в ней папой и файлов.
             elif 'del_dir_password' and 'del_dir' in request.form:
                 if sha256_crypt.verify(request.form['del_dir_password'], user.get_pwd(session['username'])):
-                    way = pathway + '/' + request.form['del_dir']
-                    error = user_file.delete_dir(username, session['user_id'], way)
+                    if request.form['del_dir']:
+                        way = '/' + pathway + '/' + request.form['del_dir']
+                        error = user_file.delete_dir(username, session['user_id'], way)
+                    else:
+                        error = 'This field must be filled'
                     dirs = user_file.get_dir(username, session['user_id'], pathway)
                     if dirs == 'There is no such directory':
                         return redirect(page_not_found)
@@ -267,7 +270,7 @@ def home_user(pathway):
 @app.route('/download/<path:filepath>')
 @login_required
 def send_files(filepath):
-    filepath = '/var/opt/users/' + filepath
+    filepath = '/home/ihgorek/Documents/file_storage/app/users/' + filepath
     print filepath
     return send_file(filepath, conditional=True)
 

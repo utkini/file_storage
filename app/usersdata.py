@@ -21,6 +21,7 @@ class UsersData(object):
         addWay
         createFolder
         getFolder
+        getDir
         changeDirName
         deleteDir
         deleteUser
@@ -33,12 +34,13 @@ class UsersData(object):
 
         :return: UserData object.
         """
-        self.directory = '/var/opt/users'
+        self.directory = '/home/ihgorek/Documents/file_storage/app/users'
         self.TEXT = {'txt', 'doc', 'docx', 'docm', 'dotm', 'dotx', 'pdf',
                      'xls', 'xlsx', 'xlsm', 'xltx', 'xlt', 'xltm', 'pptx',
                      'ppt', 'ppsx', 'pps', 'potx', 'pot', 'ppa', 'ppam'}
         self.PIC = {'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'bmp'}
         self.SONG = {'wav', 'mp3', 'wma', 'ogg', 'aac', 'flac'}
+        self.VIDEO = {'avi','mkv','mp4','mpeg'}
         with MongoClient('localhost', 27017) as mongo:
             db = mongo.db_storage
             self.coll_d = db.coll_data
@@ -50,7 +52,7 @@ class UsersData(object):
         adding the user to the database.
         :param username: Integer or String : Unique username
         :param user_id: Integer : Unique  user ID
-        :return: If True -> None   Else Exception
+        :return: If True -> None. if False - >  Exception
         """
         user_dir = '/' + username
         user_dir_os = self.directory + user_dir
@@ -114,19 +116,15 @@ class UsersData(object):
                 file_dir = file_dir + '/' + m.hexdigest()[2:4]
                 new_dir = new_dir + '/' + m.hexdigest()[2:4]
                 os.mkdir(file_dir)
-            except Exception as e:
+            except OSError as e:
                 print str(e)
         sys_dir = new_dir
         tmp = new_filename.rpartition('.')
         format_file = tmp[-1]
-
-        # count = self.coll_d.find({'user_data.username': username,
-        #                           'user_data.user_id': user_id,
-        #                           'file.user_dir': new_user_dir,
-        #                           'file.filename':filename}).count()
-        # if count == 1:
-        #     return 'This file exist'
-        if format_file in self.TEXT or format_file in self.PIC or format_file in self.SONG:
+        if format_file in self.TEXT or \
+                        format_file in self.PIC or \
+                        format_file in self.SONG or \
+                        format_file in self.VIDEO:
             fil = {'filename': new_filename,
                    'user_dir': new_user_dir,
                    'sys_dir': sys_dir}
@@ -184,6 +182,15 @@ class UsersData(object):
             old_extension = tmp.rpartition('.')[-1]
             new_extension = new_filename.rpartition('.')[-1]
             if old_extension == new_extension:
+                samp = self.coll_d.find({'user_data.username': username,
+                                           'user_data.user_id': user_id,
+                                           'file.user_dir': user_dir,
+                                           'file.filename': {'$regex': new_filename}
+                                           }).count()
+                if samp != 0:
+                    sep_filename = new_filename.rpartition('.')
+                    filename = sep_filename[0] + '(' + str(samp) + ')'
+                    new_filename = filename + '.' + sep_filename[-1]
                 self.coll_d.update({'user_data.username': username,
                                     'user_data.user_id': user_id,
                                     'file.user_dir': user_dir,
@@ -393,6 +400,10 @@ class UsersData(object):
         """
         if username == old_user_dir:
             return 'This directory can not be modified'
+        if new_dir_name == '':
+            return 'You must write a new directory name'
+        if new_dir_name == old_user_dir.rpartition('/')[-1]:
+            return 'You can not change the directory name to exactly the same'
         reg = old_user_dir
         c = []
         old_way = old_user_dir.rpartition('/')
@@ -462,10 +473,12 @@ class UsersData(object):
         tmp = self.coll_d.find_one({'user_data.username': username,
                                     'user_data.user_id': user_id,
                                     'file': {}})
+        if name_dir == '':
+            return 'This field must be filled'
         new_ways = []
         ways = tmp['pathways']
         for way in ways:
-            if name_dir not in way:
+            if name_dir != way:
                 new_ways.append(way)
         if len(ways) == len(new_ways):
             return 'This folder does not exist'
@@ -476,7 +489,7 @@ class UsersData(object):
         reg = name_dir
         sample = self.coll_d.find({'user_data.username': username,
                                    'user_data.user_id': user_id,
-                                   'file.user_dir': {'$regex': reg}})
+                                   'file.user_dir':  reg})
 
         for samp in sample:
             sys_path = samp['file']['sys_dir']
@@ -485,7 +498,7 @@ class UsersData(object):
             os.remove(del_path)
         self.coll_d.delete_many({'user_data.username': username,
                                  'user_data.user_id': user_id,
-                                 'file.user_dir': {'$regex': reg}})
+                                 'file.user_dir':  reg})
 
     def delete_user(self, username, user_id):
         """Delete the user by this user ID and name.
@@ -548,7 +561,7 @@ class UsersData(object):
 
 b = UsersData()
 
-f = False
+f = True
 if f:
     b.del_all()
 # b.create_dir_for_user('admin', 1)
@@ -558,24 +571,13 @@ if f:
 #   b.create_folder('admin', 1, 'admin/tor')
 #  b.add_file('admin', 1, 'users.pdf', 'admin/tor')
 
-# b.add_file('admin', 1, 'words.txt', 'admin')
-# b.add_file('admin', 1, 'words.txt', 'admin')
-# b.create_dir_for_user('eva', 122)
-# print b.add_file('admin', 1, 'words.txt', 'admin/dai')
-# b.get_all()
-# b.add_way('adam', 234, '/new')
-# b.add_way('adam', 234, '/new/song')
-# b.add_way('adam', 234, '/new/pic')
-# print b.get_ways('adam', 234)
-# b.delete_dir('adam', 234, '/new/ma/mo')
-# print b.change_dir_name('admin', 1, 'admin/my', 'mo')
-# t = b.find_files_in_dirs('admin', 1,'admin')
-# for ti in t:
-#     print ti
 # b.get_all()
 # print b.delete_dir('admin',1,'admin/me')
 # b.del_file('admin',1,'words.txt','admin/ade')
 # print b.get_dir('admin',1,'admin/admi')
 # b.rename_file('ihgorek',2,'ihgorek','words.txt','file.txt')
 # b.delete_user('ihgorek',2)
+# b.create_folder('admin',1,'ma')
+# b.create_folder('admin',1,'mat')
+# b.delete_dir('admin',1,'/admin/ma')
 b.get_all()

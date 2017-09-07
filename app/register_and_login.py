@@ -119,12 +119,14 @@ class Register(object):
         :param username: Integer or String : Unique username
         :return: String : username has been deleted. If false - > Error message
         """
-        try:
+
+        count = self.coll.find({'username': username}).count()
+        if count:
             self.coll.remove({'username': username})
-            ans = username + 'has been deleted'
+            ans = username + ' has been deleted'
             return ans
-        except Exception as e:
-            return str(e)
+        else:
+            return 'This user does not exist'
 
     def del_all(self):
         """Use this method to completely clean the database
@@ -136,7 +138,7 @@ class Register(object):
 
 
 a = Register()
-# a.del_all()
+a.del_all()
 tmp = a.get_all()
 for t in tmp:
     print t
