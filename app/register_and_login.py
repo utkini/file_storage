@@ -48,6 +48,10 @@ class Register(object):
         :param tracking: String : Path user
         :return: String : ok. if False - > error message
         """
+        if len(username) < 3:
+            return 'Username is too short'
+        if len(email) < 8 and '@' not in email and '.' not in email:
+            return 'Email address is too short, or incorrect'
         coll = self.coll
         user_check = coll.find_one({'username': username})
         if user_check is not None:
