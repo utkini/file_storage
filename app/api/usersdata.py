@@ -565,13 +565,13 @@ def main():
     f = False
     if f:
         b.del_all()
+    b.get_all()
     # b.create_dir_for_user('admin', 1)
     # b.create_dir_for_user('ihgorek', 2)
     # else:
     #    b.add_file('admin', 1, 'words.txt', 'admin')
     #   b.create_folder('admin', 1, 'admin/tor')
     #  b.add_file('admin', 1, 'users.pdf', 'admin/tor')
-
     # b.get_all()
     # print b.delete_dir('admin',1,'admin/me')
     # b.del_file('admin',1,'words.txt','admin/ade')
@@ -581,7 +581,6 @@ def main():
     # b.create_folder('admin',1,'ma')
     # b.create_folder('admin',1,'mat')
     # b.delete_dir('admin',1,'/admin/ma')
-    b.get_all()
 
 
 if __name__ == "__main__":
