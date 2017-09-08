@@ -1,6 +1,6 @@
 import unittest
 
-from app.usersdata import UsersData
+from app.api.usersdata import UsersData
 
 
 class TestLUsersData(unittest.TestCase):

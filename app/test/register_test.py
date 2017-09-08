@@ -1,5 +1,6 @@
 import unittest
-from app.register_and_login import Register
+
+from app.api.register_and_login import Register
 
 
 class TestLogIn(unittest.TestCase):
