@@ -17,7 +17,7 @@ In order to start using the IPA, you need to download it to your project.
 ```
 $ git clone https://github.com/ihgorek/File-Storage-API.git
 $ cd File-Storage-API
-$ pip wheel -r requirements.txt 
+$ pip install -r requirements.txt 
 ```
 
 
