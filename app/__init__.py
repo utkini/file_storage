@@ -1,14 +1,15 @@
 # coding=utf-8
-from flask import Flask, render_template, request, redirect, flash, url_for, session, g, \
-    send_from_directory, send_file
-from regForm import RegistrationForm
-from passlib.hash import sha256_crypt
-from register_and_login import Register, LogIn
-from usersdata import UsersData
-from functools import wraps
 import gc
 import os
+from functools import wraps
+
+from flask import Flask, render_template, request, redirect, flash, url_for, session, send_file
+from passlib.hash import sha256_crypt
 from werkzeug.utils import secure_filename
+
+from app.api.register_and_login import Register, LogIn
+from app.api.usersdata import UsersData
+from regForm import RegistrationForm
 
 UPLOAD_FOLDER = '/home/user1/my_flask_app/users'
 ALLOWED_EXTENSIONS = {'txt', 'doc', 'docx', 'docm', 'dotm', 'dotx', 'pdf',  # TEXT
