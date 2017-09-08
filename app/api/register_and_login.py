@@ -137,13 +137,6 @@ class Register(object):
         return 'del all'
 
 
-a = Register()
-a.del_all()
-tmp = a.get_all()
-for t in tmp:
-    print t
-
-
 class LogIn(object):
     """This is LogIn class
 
@@ -259,3 +252,15 @@ class LogIn(object):
                 return 'This email does not supported by system'
         except Exception:
             return 'This email does not exist'
+
+
+def main():
+    a = Register()
+    # a.del_all()
+    tmp = a.get_all()
+    for t in tmp:
+        print t
+
+
+if __name__ == "__main__":
+    main()
