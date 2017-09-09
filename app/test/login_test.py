@@ -1,6 +1,7 @@
 # coding=utf-8
 import unittest
-from app.register_and_login import LogIn
+
+from app.api.register_and_login import LogIn
 
 
 class TestLogIn(unittest.TestCase):

@@ -40,7 +40,7 @@ class UsersData(object):
                      'ppt', 'ppsx', 'pps', 'potx', 'pot', 'ppa', 'ppam'}
         self.PIC = {'jpg', 'jpeg', 'tif', 'tiff', 'png', 'gif', 'bmp'}
         self.SONG = {'wav', 'mp3', 'wma', 'ogg', 'aac', 'flac'}
-        self.VIDEO = {'avi','mkv','mp4','mpeg'}
+        self.VIDEO = {'avi', 'mkv', 'mp4', 'mpeg'}
         with MongoClient('localhost', 27017) as mongo:
             db = mongo.db_storage
             self.coll_d = db.coll_data
@@ -183,10 +183,10 @@ class UsersData(object):
             new_extension = new_filename.rpartition('.')[-1]
             if old_extension == new_extension:
                 samp = self.coll_d.find({'user_data.username': username,
-                                           'user_data.user_id': user_id,
-                                           'file.user_dir': user_dir,
-                                           'file.filename': {'$regex': new_filename}
-                                           }).count()
+                                         'user_data.user_id': user_id,
+                                         'file.user_dir': user_dir,
+                                         'file.filename': {'$regex': new_filename}
+                                         }).count()
                 if samp != 0:
                     sep_filename = new_filename.rpartition('.')
                     filename = sep_filename[0] + '(' + str(samp) + ')'
@@ -489,7 +489,7 @@ class UsersData(object):
         reg = name_dir
         sample = self.coll_d.find({'user_data.username': username,
                                    'user_data.user_id': user_id,
-                                   'file.user_dir':  reg})
+                                   'file.user_dir': reg})
 
         for samp in sample:
             sys_path = samp['file']['sys_dir']
@@ -498,7 +498,7 @@ class UsersData(object):
             os.remove(del_path)
         self.coll_d.delete_many({'user_data.username': username,
                                  'user_data.user_id': user_id,
-                                 'file.user_dir':  reg})
+                                 'file.user_dir': reg})
 
     def delete_user(self, username, user_id):
         """Delete the user by this user ID and name.
@@ -559,25 +559,28 @@ class UsersData(object):
         return 'del all'
 
 
-b = UsersData()
+def main():
+    b = UsersData()
 
-f = False
-if f:
-    b.del_all()
-# b.create_dir_for_user('admin', 1)
-# b.create_dir_for_user('ihgorek', 2)
-# else:
-#    b.add_file('admin', 1, 'words.txt', 'admin')
-#   b.create_folder('admin', 1, 'admin/tor')
-#  b.add_file('admin', 1, 'users.pdf', 'admin/tor')
+    f = False
+    if f:
+        b.del_all()
+    b.get_all()
+    # b.create_dir_for_user('admin', 1)
+    # b.create_dir_for_user('ihgorek', 2)
+    # else:
+    #    b.add_file('admin', 1, 'words.txt', 'admin')
+    #   b.create_folder('admin', 1, 'admin/tor')
+    #  b.add_file('admin', 1, 'users.pdf', 'admin/tor')
+    # b.get_all()
+    # print b.delete_dir('admin',1,'admin/me')
+    # b.del_file('admin',1,'words.txt','admin/ade')
+    # print b.get_dir('admin',1,'admin/admi')
+    # b.rename_file('ihgorek',2,'ihgorek','words.txt','file.txt')
+    # b.delete_user('ihgorek',2)
+    # b.create_folder('admin',1,'mat')
+    # b.delete_dir('admin',1,'/admin/ma')
 
-# b.get_all()
-# print b.delete_dir('admin',1,'admin/me')
-# b.del_file('admin',1,'words.txt','admin/ade')
-# print b.get_dir('admin',1,'admin/admi')
-# b.rename_file('ihgorek',2,'ihgorek','words.txt','file.txt')
-# b.delete_user('ihgorek',2)
-# b.create_folder('admin',1,'ma')
-# b.create_folder('admin',1,'mat')
-# b.delete_dir('admin',1,'/admin/ma')
-b.get_all()
+
+if __name__ == "__main__":
+    main()
