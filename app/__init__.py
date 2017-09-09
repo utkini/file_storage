@@ -153,14 +153,10 @@ def home_user(pathway):
             # Форма для изменения имени директории в которой сейчас находится пользователь
             elif 'new_dir_password' and 'new_dir' in request.form:
                 sep_path = pathway.split('/')
-                flash(request.form)
                 change_dir = sep_path[-1]
                 if sha256_crypt.verify(request.form['new_dir_password'], user.get_pwd(session['username'])):
-                    if request.form['new_dir']:
-                        error = user_file.change_dir_name(session['username'], session['user_id'],
-                                                          pathway, request.form['new_dir'])
-                    else:
-                        error = 'This field must be filled'
+                    error = user_file.change_dir_name(session['username'], session['user_id'],
+                                                      pathway, request.form['new_dir'])
                     if error is None:
                         tmp = pathway.split('/')
                         tmp[-1] = request.form['new_dir']
@@ -185,8 +181,11 @@ def home_user(pathway):
             # Форма для создания папки в той директории, в которой находится пользователь.
             elif 'create_new_folder' and 'create_folder_password' in request.form:
                 if sha256_crypt.verify(request.form['create_folder_password'], user.get_pwd(session['username'])):
-                    way = pathway + '/' + request.form['create_new_folder']
-                    error = user_file.create_folder(username, session['user_id'], way)
+                    if request.form['create_new_folder']:
+                        way = pathway + '/' + request.form['create_new_folder']
+                        error = user_file.create_folder(username, session['user_id'], way)
+                    else:
+                        error = 'This field must be filled'
                     dirs = user_file.get_dir(username, session['user_id'], pathway)
                     if dirs == 'There is no such directory':
                         return redirect(page_not_found)
