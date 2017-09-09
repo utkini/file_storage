@@ -69,7 +69,7 @@ class UsersData(object):
             print str(e)
 
     def add_file(self, username, user_id, filename, user_dir=''):
-        """Adding a file to the database and creating a directory to write it to the server
+        """Adding a file to the database and creating a directory to write it to the server.
 
         This method implements adding a file to the database and creating directories on the server
         and directories for the user to store this file.
@@ -316,12 +316,12 @@ class UsersData(object):
         """Use this method to get all the folders in this directory
 
         Getting all folders with directories that are relative to the directory in which the user is located.
-        you need to enter the full directory of the user's location and then the method will produce the following
+        You need to enter the full directory of the user's location and then the method will produce the following.
         Possible files with directories for the dictionary to go deep
         :param username: Integer or String : Unique username
         :param user_id: Integer : Unique  user ID
         :param user_dir: String :
-        :return: dict {name folder: name folder, folder path: folder path }
+        :return: dict {name folder: folder path }
         """
         tmp = self.coll_d.find_one({'user_data.username': username,
                                     'user_data.user_id': user_id,
