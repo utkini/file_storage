@@ -335,7 +335,7 @@ def terms():
 
 
 @app.route('/legal/privacy/')
-def terms():
+def privacy():
     return render_template('privacy.html')
 
 
