@@ -566,7 +566,6 @@ class UsersData(object):
 
 def main():
     b = UsersData()
-
     f = False
     if f:
         b.del_all()
