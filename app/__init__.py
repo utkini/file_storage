@@ -153,6 +153,7 @@ def home_user(pathway):
             # Форма для изменения имени директории в которой сейчас находится пользователь
             elif 'new_dir_password' and 'new_dir' in request.form:
                 sep_path = pathway.split('/')
+		flash(request.form)
                 change_dir = sep_path[-1]
                 if sha256_crypt.verify(request.form['new_dir_password'], user.get_pwd(session['username'])):
                     error = user_file.change_dir_name(session['username'], session['user_id'],
