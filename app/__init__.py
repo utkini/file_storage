@@ -328,6 +328,17 @@ def delete_page():
         flash("Something's wrong")
     return redirect(url_for('homepage'))
 
+
+@app.route('/legal/terms/')
+def terms():
+    return render_template('terms.html')
+
+
+@app.route('/legal/privacy/')
+def terms():
+    return render_template('privacy.html')
+
+
 @app.route('/support/')
 def support():
     return render_template('support.html')
