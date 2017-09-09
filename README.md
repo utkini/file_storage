@@ -59,4 +59,4 @@ are stored in the directory that is in the **UPLOAD_FOLDER** variable in
 the `app/__init__.py` file and in the **directory** variable, which is in 
 the `app/api/usersdata.py` file. All folders for storing files are created in this directory. 
 To change the directory for saving files, you need to change these all 
-variables in `/ __init__.py` and in `api/usersdata.py`
+variables in `/__init__.py` and in `api/usersdata.py`
