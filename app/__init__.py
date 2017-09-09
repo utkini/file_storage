@@ -7,8 +7,8 @@ from flask import Flask, render_template, request, redirect, flash, url_for, ses
 from passlib.hash import sha256_crypt
 from werkzeug.utils import secure_filename
 
-from app.api.register_and_login import Register, LogIn
-from app.api.usersdata import UsersData
+from api.register_and_login import Register, LogIn
+from api.usersdata import UsersData
 from regForm import RegistrationForm
 
 UPLOAD_FOLDER = '/home/user1/my_flask_app/users'
