@@ -136,8 +136,6 @@ class Register(object):
         self.coll.remove(None)
         return 'del all'
 
-
-<<<<<<< HEAD:app/register_and_login.py
 a = Register()
 # a.del_all()
 tmp = a.get_all()
@@ -145,8 +143,6 @@ for t in tmp:
     print t
 
 
-=======
->>>>>>> 404036c53d42174813a1c040df8a5146368f36a6:app/api/register_and_login.py
 class LogIn(object):
     """This is LogIn class
 
