@@ -271,7 +271,7 @@ def home_user(pathway):
 @app.route('/download/<path:filepath>')
 @login_required
 def send_files(filepath):
-    filepath = '/home/user1/my_flask_app/users/' + filepath
+    filepath = UPLOAD_FOLDER + '/' + filepath
     print filepath
     return send_file(filepath, conditional=True)
 
