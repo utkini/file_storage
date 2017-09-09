@@ -8,7 +8,7 @@ example of File storage.
 
   * [Description.](#description)
   * [Getting started.](#getting-started)
-  * [Class Register.](#class-registration)
+  * [Class Register.](#class-register)
   * [Class LogIn.](#class-login)
   * [Class UsersData.](#class-usersdata)
   
@@ -16,7 +16,7 @@ example of File storage.
 
 Api consists of three classes: Register, LogIn and UsersData:
 
-- [Register class](#class-registration) is responsible for user registration;
+- [Register class](#class-register) is responsible for user registration;
 - [LogIn class](#class-login) is responsible for identifying the user in the database's database system;
 - [UsersData class](#class-usersdata) is responsible for all the work with files and user directories.
 
@@ -50,6 +50,31 @@ c
 
 c
 
+c
+
+
+c
+cc
+c
+
+
+
+c
+
+cc
+
+
+c
+
+c
+
+
+
+c
+
+
+c
+
 ## Class LogIn.
 
 c 
@@ -57,6 +82,30 @@ c
 
 d
 
+c
+
+c
+
+c
+c
+c
+c
+
+
+c
+
+c
+
+c
+
+c
+
+c
+
+c
+
+
+c
 d
 
 d
@@ -64,6 +113,35 @@ d
 ## Class UsersData.
 
 
+
+cc
+
+cc
+
+cc
+c
+c
+c
+c
+c
+
+c
+
+c
+
+c
+
+c
+
+c
+
+c
+
+c
+
+c
+
+c
 
 
 
