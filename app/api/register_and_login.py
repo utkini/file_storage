@@ -136,12 +136,6 @@ class Register(object):
         self.coll.remove(None)
         return 'del all'
 
-a = Register()
-# a.del_all()
-tmp = a.get_all()
-for t in tmp:
-    print t
-
 
 class LogIn(object):
     """This is LogIn class
