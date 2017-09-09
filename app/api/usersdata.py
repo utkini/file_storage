@@ -476,8 +476,13 @@ class UsersData(object):
         if name_dir == '':
             return 'This field must be filled'
         new_ways = []
+        neww_way = []
+        new_pathway = name_dir + '/'
         ways = tmp['pathways']
         for way in ways:
+            if new_pathway not in way:
+                neww_way.append(way)
+        for way in neww_way:
             if name_dir != way:
                 new_ways.append(way)
         if len(ways) == len(new_ways):
