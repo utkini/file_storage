@@ -22,10 +22,9 @@ In order to deploy this service at home. You need to write the following command
 
 ```
 $ sudo apt-get install python-virtualenv python-pip
-$ virtualenv env
-$ source env/bin/activate
 $ git clone https://github.com/ihgorek/file_storage.git
 $ cd file_storage/app
+$ source env/bin/activate
 $ pip install -r requirements.txt 
 ```
 All the necessary libraries for the API are installed.
