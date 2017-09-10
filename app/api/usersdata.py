@@ -202,7 +202,7 @@ class UsersData(object):
                 ans = 'You can not change the extension file' + old_extension + 'to an extension' + new_extension
                 return ans
         except Exception:
-            return 'Such file does not exist'
+            return "Such file doesn't exist"
 
     def del_file(self, username, user_id, filename, user_dir):
         """Use this method to delete a file from the database and the system
@@ -454,7 +454,7 @@ class UsersData(object):
                                    }
                                })
         if count == 0 and len(tmp) == 1:
-            return 'Directory with this name does not exist'
+            return "Directory with this name doesn't exist"
 
     def delete_dir(self, username, user_id, name_dir):
         """Use this method to delete a directory

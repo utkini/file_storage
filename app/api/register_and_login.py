@@ -86,7 +86,7 @@ class Register(object):
             get_id = self.coll.find_one({'username': username})
             return get_id['user_id']
         except Exception:
-            return 'This user does not exist'
+            return "This user doesn't exist"
 
     def get_tracking(self, username):
         """Use this method to track user sessions
@@ -126,7 +126,7 @@ class Register(object):
             ans = username + ' has been deleted'
             return ans
         else:
-            return 'This user does not exist'
+            return "This user doesn't exist"
 
     def del_all(self):
         """Use this method to completely clean the database
@@ -186,7 +186,7 @@ class LogIn(object):
             tmp = self.coll.find_one({'username': username})
             return tmp['user_id']
         except Exception:
-            return 'This user does not exist'
+            return "This user doesn't exist"
 
     def get_pwd(self, username):
         """Use this method to retrieve a user password
@@ -229,7 +229,7 @@ class LogIn(object):
             self.coll.delete_one(({'username': username,
                                    'user_id': user_id}))
         except Exception:
-            return 'This user does not exist'
+            return "This user doesn't exist"
 
     def change_email(self, username, user_id, new_email):
         """Use this method to change email address from the database
@@ -249,9 +249,9 @@ class LogIn(object):
                                   'user_id': user_id},
                                  {'$set': {'email': new_email}})
             else:
-                return 'This email does not supported by system'
+                return "This email doesn't supported by system"
         except Exception:
-            return 'This email does not exist'
+            return "This email doesn't exist"
 
 
 def main():

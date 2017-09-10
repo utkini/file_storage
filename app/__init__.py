@@ -59,7 +59,7 @@ def login_page():
         if request.method == "POST":
             check_user = user.login_user(request.form['username'])
             if check_user == 'bad':
-                error = 'Such a user does not exist'
+                error = "Such a user doesn't exist"
                 return render_template('login.html',
                                        error_u=error)
             if sha256_crypt.verify(request.form['password'], user.get_pwd(request.form['username'])):
