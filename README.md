@@ -12,7 +12,7 @@ example of File storage.
   
 ### Description.
 
-This project shows how you can use the File-storage-API.
+This project shows how you can use the [File-storage-API](https://github.com/ihgorek/File-Storage-API).
 
 ### Deploy.
 
