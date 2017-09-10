@@ -46,24 +46,25 @@
     </form>
     </div>
 <hr>
-    <p>
-        <button class="btn btn-primary btn-success" type="button" data-toggle="collapse"
-                data-target="#RenameFile" aria-expanded="false" aria-controls="collapseExample1"
-                style="margin-bottom: 2%">
-                Rename file
-        </button>
 
-        <button class="btn btn-primary btn-success" type="button" data-toggle="collapse"
-                data-target="#DeleteFile" aria-expanded="false" aria-controls="collapseExample1"
-                style="margin-bottom: 2%">
-                Delete file
-        </button>
 
-    </p>
 
-    <div class="collapse" id="RenameFile">
-        <div class="card card-body">
-            <div style="margin-right: 1vw; max-width: 400px;margin-bottom: 3%">
+<div id="accordion" role="tablist">
+  <div class="card">
+
+	    <div class="card-header" role="tab" id="headingOne">
+	      <h5 class="mb-0">
+	        <a data-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne"
+            class="text-success">
+	          Rename file
+	        </a>
+	      </h5>
+	    </div>
+
+	    <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne"
+             data-parent="#accordion">
+	      <div class="card-body">
+	        <div style="margin-right: 1vw; max-width: 400px;margin-bottom: 3%">
                 <form method="post" action="">
                     <h6>You can change the file name in this directory.</h6>
 
@@ -78,7 +79,8 @@
                         </div>
 
                         <div class="form-group">
-                            <input type="text" class="form-control" id="InputNewFilename" placeholder="New file name"
+                            <input type="text" class="form-control" id="InputNewFilename"
+                                   placeholder="New file name"
                                    name="rename_file_new" value="{{ request.form.rename_file_new }}">
                             {% if error_fp %}
                             <small id="userhelp" class="form-text text-muted">
@@ -89,11 +91,22 @@
                     <button type="submit" class="btn btn-primary bg-success" style="width: 100%">Change</button>
                 </form>
             </div>
-        </div>
-    </div>
+	      </div>
+	    </div>
 
-    <div class="collapse" id="DeleteFile">
-        <div class="card card-body">
+  </div>
+
+  <div class="card">
+    <div class="card-header" role="tab" id="headingTwo">
+      <h5 class="mb-0">
+        <a class="collapsed text-success" data-toggle="collapse" href="#collapseTwo" aria-expanded="false"
+           aria-controls="collapseTwo">
+          Delete file
+        </a>
+      </h5>
+    </div>
+    <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo" data-parent="#accordion">
+        <div class="card-body">
             <div style="margin-right: 1vw; max-width: 400px;margin-bottom: 3%">
                 <form method="post" action="">
                     <h6>You can remove the love file from this directory.</h6>
@@ -123,50 +136,42 @@
             </div>
         </div>
     </div>
+  </div>
 
+    <hr>
 
+      <div class="card">
 
+            <div class="card-header" role="tab" id="headingFour">
+              <h5 class="mb-0">
+                <a data-toggle="collapse" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour"
+                class="collapsed text-success">
+                  Create new folder
+                </a>
+              </h5>
+            </div>
 
+            <div id="collapseFour" class="collapse" role="tabpanel" aria-labelledby="headingFour"
+                 data-parent="#accordion">
+              <div class="card-body">
+                    <div style="margin-right: 1vw; max-width: 400px;margin-bottom: 3%">
+                        <form method="post" action="">
+                            <h6>You can create new folder in this directory.</h6>
 
-<hr>
-
-        <button class="btn btn-primary btn-success" type="button" data-toggle="collapse"
-                data-target="#СreateNewFolder" aria-expanded="false" aria-controls="collapseExample"
-                style="margin-bottom: 2%">
-                Create new folder
-        </button>
-
-        <button class="btn btn-primary btn-success" type="button" data-toggle="collapse"
-                data-target="#ChangeNameDirectory" aria-expanded="false" aria-controls="collapseExample"
-                style="margin-bottom: 2%">
-                Change name directory
-        </button>
-
-        <button class="btn btn-primary btn-success" type="button" data-toggle="collapse"
-                data-target="#DeleteDirectory" aria-expanded="false" aria-controls="collapseExample"
-                style="margin-bottom: 2%">
-                Delete directory
-        </button>
-
-
-    <div class="collapse" id="СreateNewFolder">
-        <div class="card card-body">
-            <div style="margin-right: 1vw; max-width: 400px;margin-bottom: 3%">
-                <form method="post" action="">
-                    <h6>You can create new folder in this directory.</h6>
-
-                        <div class="form-group">
-                            <input type="text" class="form-control" id="InputDirectory" placeholder="Folder name"
-                                   name="create_new_folder" value="{{ request.form.create_new_folder }}">
-                            {% if error_create_folder %}
-                                <small id="userhelp" class="form-text text-muted">
-                                    {{ error_create_folder }}
-                                </small>
-                            {% endif %}
-                        </div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="InputDirectory"
+                                           placeholder="Folder name"
+                                            name="create_new_folder" value="{{ request.form.create_new_folder }}">
+                                    {% if error_create_folder %}
+                                    <small id="userhelp" class="form-text text-muted">
+                                        {{ error_create_folder }}
+                                    </small>
+                                    {% endif %}
+                                </div>
 
                         <div class="form-group">
-                            <input type="password" class="form-control" id="InputFolderPassword" placeholder="Password"
+                            <input type="password" class="form-control" id="InputFolderPassword"
+                                   placeholder="Password"
                                    name="create_folder_password" value="{{ request.form.create_folder_password }}">
                             {% if error_create_folder_p %}
                             <small id="userhelp" class="form-text text-muted">
@@ -174,47 +179,77 @@
                             </small>
                             {% endif %}
                         </div>
-                    <button type="submit" class="btn btn-primary bg-success" style="width: 100%">Create Folder</button>
-                </form>
+                            <button type="submit" class="btn btn-primary bg-success" style="width: 100%">
+                                Create Folder
+                            </button>
+                        </form>
+                    </div>
+              </div>
             </div>
-        </div>
-    </div>
 
-    <div class="collapse" id="ChangeNameDirectory">
-        <div class="card card-body">
-            <div style="margin-right: 1vw; max-width: 400px;margin-bottom: 3%">
-                <form method="post" action="">
-                    <h6>You can always change the name of the folder where you are located.</h6>
+      </div>
 
-                        <div class="form-group">
-                            <input type="text" class="form-control" id="InputDirectory" placeholder="New dir"
-                                   name="new_dir" value="{{ request.form.new_dir }}">
-                            {% if error_dir %}
-                                <small id="userhelp" class="form-text text-muted">
-                                    {{ error_dir }}
-                                </small>
-                            {% endif %}
-                        </div>
+      <div class="card">
 
-                        <div class="form-group">
-                            <input type="password" class="form-control" id="InputDirectoryPassword"
-                                   placeholder="Password"
-                                   name="new_dir_password" value="{{ request.form.new_dir_password }}">
-                            {% if error_dir_p %}
-                            <small id="userhelp" class="form-text text-muted">
-                                {{ error_dir_p }}
-                            </small>
-                            {% endif %}
-                        </div>
-                    <button type="submit" class="btn btn-primary bg-success" style="width: 100%">Change name directory</button>
-                </form>
+            <div class="card-header" role="tab" id="headingFive">
+              <h5 class="mb-0">
+                <a data-toggle="collapse" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive"
+                class="collapsed text-success">
+                  Change name directory
+                </a>
+              </h5>
             </div>
-        </div>
-    </div>
 
-    <div class="collapse" id="DeleteDirectory">
-        <div class="card card-body">
-            <div style="margin-right: 1vw; max-width: 400px;margin-bottom: 3%">
+            <div id="collapseFive" class="collapse" role="tabpanel" aria-labelledby="headingFive"
+                 data-parent="#accordion">
+                <div class="card-body">
+                    <div style="margin-right: 1vw; max-width: 400px;margin-bottom: 3%">
+                        <form method="post" action="">
+                            <h6>You can always change the name of the folder where you are located.</h6>
+
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="InputDirectory" placeholder="New dir"
+                                           name="new_dir" value="{{ request.form.new_dir }}">
+                                    {% if error_dir %}
+                                        <small id="userhelp" class="form-text text-muted">
+                                            {{ error_dir }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="password" class="form-control" id="InputDirectoryPassword"
+                                           placeholder="Password"
+                                           name="new_dir_password" value="{{ request.form.new_dir_password }}">
+                                    {% if error_dir_p %}
+                                    <small id="userhelp" class="form-text text-muted">
+                                        {{ error_dir_p }}
+                                    </small>
+                                    {% endif %}
+                                </div>
+                            <button type="submit" class="btn btn-primary bg-success" style="width: 100%">
+                                Change name directory
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" role="tab" id="headingSix">
+          <h5 class="mb-0">
+            <a class="collapsed text-success" data-toggle="collapse" href="#collapseSix" aria-expanded="false"
+               aria-controls="collapseSix">
+              Delete directory
+            </a>
+          </h5>
+        </div>
+        <div id="collapseSix" class="collapse" role="tabpanel" aria-labelledby="headingThree"
+             data-parent="#accordion">
+          <div class="card-body">
+
+              <div style="margin-right: 1vw; max-width: 400px;margin-bottom: 3%">
                 <form method="post" action="">
                     <h6>You can delete any folder in this directory.</h6>
 
@@ -240,10 +275,13 @@
                         </div>
                     <button type="submit" class="btn btn-primary bg-success" style="width: 100%">Delete folder</button>
                 </form>
-            </div>
-        </div>
-    </div>
+              </div>
 
+          </div>
+        </div>
+      </div>
+
+</div>
 
 
 <hr>
