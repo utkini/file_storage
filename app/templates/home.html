@@ -169,16 +169,6 @@
                                     {% endif %}
                                 </div>
 
-                        <div class="form-group">
-                            <input type="password" class="form-control" id="InputFolderPassword"
-                                   placeholder="Password"
-                                   name="create_folder_password" value="{{ request.form.create_folder_password }}">
-                            {% if error_create_folder_p %}
-                            <small id="userhelp" class="form-text text-muted">
-                                {{ error_create_folder_p }}
-                            </small>
-                            {% endif %}
-                        </div>
                             <button type="submit" class="btn btn-primary bg-success" style="width: 100%">
                                 Create Folder
                             </button>
@@ -217,16 +207,7 @@
                                     {% endif %}
                                 </div>
 
-                                <div class="form-group">
-                                    <input type="password" class="form-control" id="InputDirectoryPassword"
-                                           placeholder="Password"
-                                           name="new_dir_password" value="{{ request.form.new_dir_password }}">
-                                    {% if error_dir_p %}
-                                    <small id="userhelp" class="form-text text-muted">
-                                        {{ error_dir_p }}
-                                    </small>
-                                    {% endif %}
-                                </div>
+
                             <button type="submit" class="btn btn-primary bg-success" style="width: 100%">
                                 Change name directory
                             </button>
