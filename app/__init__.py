@@ -151,15 +151,17 @@ def home_user(pathway):
                     return redirect(url_for('home_user', pathway=pathway))
                     # файл есть
             # Форма для изменения имени директории в которой сейчас находится пользователь
-            elif 'new_dir' in request.form:
+            elif 'new_name_dir' in request.form:
                 sep_path = pathway.split('/')
                 change_dir = sep_path[-1]
-
-                error = user_file.change_dir_name(session['username'], session['user_id'],
-                                                  pathway, request.form['new_dir'])
+                if len(request.form['new_name_dir']) < 15:
+                    error = user_file.change_dir_name(session['username'], session['user_id'],
+                                                      pathway, request.form['new_name_dir'])
+                else:
+                    error = 'This directory name is incorrect'
                 if error is None:
                     tmp = pathway.split('/')
-                    tmp[-1] = request.form['new_dir']
+                    tmp[-1] = request.form['new_name_dir']
                     pathway = '/'.join(tmp)
                     dirs = user_file.get_dir(username, session['user_id'], pathway)
                     if dirs == 'There is no such directory':
@@ -171,11 +173,10 @@ def home_user(pathway):
                                        folders=folders,
                                        files=files,
                                        error_dir=error)
-
             # Форма для создания папки в той директории, в которой находится пользователь.
             elif 'create_new_folder' in request.form:
 
-                if request.form['create_new_folder']:
+                if request.form['create_new_folder'] and len(request.form['create_new_folder']) < 15:
                     way = pathway + '/' + request.form['create_new_folder']
                     error = user_file.create_folder(username, session['user_id'], way)
                 else:
@@ -216,6 +217,7 @@ def home_user(pathway):
                                            folders=folders,
                                            files=files,
                                            error_del_dir_p=error)
+            # Форма для удаления файла
             elif 'del_file' and 'del_file_password' in request.form:
                 if sha256_crypt.verify(request.form['del_file_password'], user.get_pwd(session['username'])):
                     error = user_file.del_file(username, session['user_id'], request.form['del_file'], pathway)
@@ -236,9 +238,11 @@ def home_user(pathway):
                                            folders=folders,
                                            files=files,
                                            error_del_file_p=error)
+            # Форма для переименования файла
             elif 'rename_file_new' and 'rename_file_old' in request.form:
+                new_filename = secure_filename(request.form['rename_file_new'])
                 error = user_file.rename_file(username, session['user_id'], pathway,
-                                              request.form['rename_file_old'], request.form['rename_file_new'])
+                                              request.form['rename_file_old'], new_filename)
                 dirs = user_file.get_dir(username, session['user_id'], pathway)
                 if dirs == 'There is no such directory':
                     return redirect(page_not_found)
