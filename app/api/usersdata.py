@@ -121,10 +121,10 @@ class UsersData(object):
         sys_dir = new_dir
         tmp = new_filename.rpartition('.')
         format_file = tmp[-1]
-        if format_file in self.TEXT or \
-                        format_file in self.PIC or \
-                        format_file in self.SONG or \
-                        format_file in self.VIDEO:
+        if format_file.lower() in self.TEXT or \
+                        format_file.lower() in self.PIC or \
+                        format_file.lower() in self.SONG or \
+                        format_file.lower() in self.VIDEO:
             fil = {'filename': new_filename,
                    'user_dir': new_user_dir,
                    'sys_dir': sys_dir}
