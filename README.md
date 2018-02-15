@@ -1,4 +1,4 @@
-# <p align="center">[File storage](http://95.213.236.60)
+# <p align="center">File storage
  
 <p align="center">A simple, but extensible Python 
 implementation for the File storage.
